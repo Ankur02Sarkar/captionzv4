@@ -79,16 +79,10 @@ export default function Home() {
         </video>
         <div className="home-hero__scrim"></div>
 
-        <div
-          className={`hero-statement reveal d3 ${isStatementOpen ? "is-open" : ""}`}
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: "6%",
-            transform: "translateX(-50%)",
-            zIndex: 4,
-          }}
-        >
+        <div className="home-hero__stage">
+          <div
+            className={`hero-statement reveal d3 ${isStatementOpen ? "is-open" : ""}`}
+          >
           <h1 style={{ margin: 0 }}>
             <button
               className="step-trigger"
@@ -106,7 +100,8 @@ export default function Home() {
             deliberate threshold at a time.
           </p>
         </div>
-      </section>
+      </div>
+    </section>
 
       <Footline
         style={{

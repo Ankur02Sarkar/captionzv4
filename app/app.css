@@ -614,7 +614,20 @@ body.menu-open { overflow: hidden; }
    Homepage hover / tap reveal statement
    ========================================================================== */
 
+/* Coordinated stage layer matching video object-fit: cover */
+.home-hero__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6%;
+  pointer-events: none;
+  z-index: 4;
+}
+
 .hero-statement {
+  pointer-events: auto;
   max-width: min(480px, 78vw);
   text-align: center;
 }
@@ -630,6 +643,9 @@ body.menu-open { overflow: hidden; }
   color: var(--charcoal);
   text-align: center;
   padding: 6px 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
 }
 
 .step-trigger em {
@@ -660,6 +676,36 @@ body.menu-open { overflow: hidden; }
 .hero-statement.is-open .step-reveal {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (min-width: 1025px) {
+  .home-hero__stage {
+    display: block;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, calc(max(100vh, 640px) * 16 / 9));
+    height: max(max(100vh, 640px), calc(100% * 9 / 16));
+    padding-bottom: 0;
+  }
+
+  .hero-statement {
+    position: absolute;
+    left: 66.2%;
+    top: 82.2%;
+    text-align: left;
+    max-width: min(420px, 32vw);
+  }
+
+  .hero-statement .step-trigger {
+    text-align: left;
+    padding-left: 0;
+  }
+
+  .hero-statement .step-reveal {
+    margin: 10px 0 0 0;
+    max-width: 40ch;
+  }
 }
 
 /* ==========================================================================
