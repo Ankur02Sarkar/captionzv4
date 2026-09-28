@@ -26,6 +26,10 @@ export default function Home() {
     const video = videoRef.current;
     if (!video) return;
 
+    if (!video.paused && video.currentTime > 0) {
+      setIsPlaying(true);
+    }
+
     const handlePlaying = () => setIsPlaying(true);
     video.addEventListener("playing", handlePlaying);
 
@@ -65,9 +69,11 @@ export default function Home() {
           muted
           loop
           playsInline
+          preload="auto"
           poster="/assets/home-poster.jpg"
           aria-hidden="true"
           className={isPlaying ? "is-playing" : ""}
+          onPlaying={() => setIsPlaying(true)}
         >
           <source src="/assets/home-animation.mp4" type="video/mp4" />
         </video>

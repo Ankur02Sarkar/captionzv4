@@ -1046,7 +1046,7 @@ body.menu-open { overflow: hidden; }
   object-fit: cover;
 }
 .home-hero__poster { z-index: 1; }
-.home-hero video { z-index: 2; opacity: 0; transition: opacity 1.1s var(--ease-soft); }
+.home-hero video { z-index: 2; opacity: 0; transition: opacity 0.5s ease; }
 .home-hero video.is-playing { opacity: 1; }
 
 .home-hero__scrim {
