@@ -5,7 +5,6 @@ import { Footline } from "../components/Common/Footline";
 import { getDatabase } from "../db/getDb";
 import { caseStudies } from "../db/schema";
 import { eq, ne } from "drizzle-orm";
-import caseStudiesFallback from "../../casestudies.json";
 
 interface ParsedCaseStudy {
   id: string;
@@ -99,46 +98,6 @@ export async function loader({ params, context }: Route.LoaderArgs) {
       }
     } catch (err) {
       console.error("D1 query error in case-study-detail loader:", err);
-    }
-  }
-
-  if (!item) {
-    // Fallback from casestudies.json
-    const rawList: any[] = caseStudiesFallback;
-    const found = rawList.find((c) => c.slug === slug);
-    if (found) {
-      item = {
-        id: found.id,
-        slug: found.slug,
-        client: found.client,
-        title: found.title,
-        industry: found.industry,
-        category: found.category,
-        year: found.year,
-        tagline: found.tagline,
-        heroImage: found.heroImage,
-        galleryImages: safeParseJson<string[]>(found.galleryImages, []),
-        overview: found.overview,
-        challenge: found.challenge,
-        strategy: found.strategy,
-        results: safeParseJson<Array<{ label: string; value: string }>>(found.results, []),
-        testimonial: safeParseJson<{ quote: string; title: string; author: string } | null>(
-          found.testimonial,
-          null
-        ),
-        deliverables: safeParseJson<string[]>(found.deliverables, []),
-        externalUrl: found.externalUrl,
-        published: found.published,
-      };
-
-      const nextFound = rawList.find((c) => c.slug !== slug);
-      if (nextFound) {
-        nextStudy = {
-          slug: nextFound.slug,
-          client: nextFound.client,
-          title: nextFound.title,
-        };
-      }
     }
   }
 

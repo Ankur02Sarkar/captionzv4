@@ -5,7 +5,6 @@ import { Footline } from "../components/Common/Footline";
 import { getDatabase } from "../db/getDb";
 import { caseStudies, type CaseStudy as DbCaseStudy } from "../db/schema";
 import { eq, or, like, and, count, desc } from "drizzle-orm";
-import caseStudiesFallback from "../../casestudies.json";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -146,53 +145,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     }
   }
 
-  // Graceful fallback from casestudies.json
-  const rawList: any[] = caseStudiesFallback;
-  let filtered = rawList.filter((item) => item.published !== false);
-
-  if (category !== "all") {
-    filtered = filtered.filter(
-      (item) => item.category?.toLowerCase() === category.toLowerCase()
-    );
-  }
-
-  if (q) {
-    filtered = filtered.filter((item) => {
-      const haystack = `${item.title} ${item.client} ${item.tagline} ${item.industry} ${item.category}`.toLowerCase();
-      return haystack.includes(q);
-    });
-  }
-
-  const totalCount = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
-  const paged = filtered.slice(offset, offset + limit).map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    client: r.client,
-    title: r.title,
-    industry: r.industry,
-    category: r.category,
-    year: r.year,
-    tagline: r.tagline,
-    heroImage: r.heroImage,
-    galleryImages: safeParseJson<string[]>(r.galleryImages, []),
-    overview: r.overview,
-    challenge: r.challenge,
-    strategy: r.strategy,
-    results: safeParseJson<Array<{ label: string; value: string }>>(r.results, []),
-    testimonial: safeParseJson<{ quote: string; title: string; author: string } | null>(
-      r.testimonial,
-      null
-    ),
-    deliverables: safeParseJson<string[]>(r.deliverables, []),
-    externalUrl: r.externalUrl,
-    published: r.published,
-  }));
-
   return {
-    items: paged,
-    totalCount,
-    totalPages,
+    items: [],
+    totalCount: 0,
+    totalPages: 1,
     currentPage: page,
     currentCategory: category,
     currentQuery: q,

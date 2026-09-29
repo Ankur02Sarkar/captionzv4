@@ -6,7 +6,7 @@ import { HiResImage } from "../components/Common/HiResImage";
 import { getDatabase } from "../db/getDb";
 import { works } from "../db/schema";
 import { eq } from "drizzle-orm";
-import { worksBySlug, type WorkItem } from "../data/worksData";
+import type { WorkItem } from "../types/work";
 
 function safeParseJson<T>(raw: any, fallback: T): T {
   if (!raw) return fallback;
@@ -74,22 +74,17 @@ export async function loader({ params, context }: Route.LoaderArgs) {
   }
 
   if (!work) {
-    work = worksBySlug.get(slug) || null;
-  }
-
-  if (!work) {
     throw new Response("Project Not Found", { status: 404 });
   }
 
   return { work };
 }
 
-export function meta({ params }: Route.MetaArgs) {
-  let slug = params.slug?.replace(/\.html$/, "");
-  const work = slug ? worksBySlug.get(slug) : undefined;
-  if (!work) {
+export function meta({ loaderData }: Route.MetaArgs) {
+  if (!loaderData?.work) {
     return [{ title: "Work Not Found — Captionz" }];
   }
+  const { work } = loaderData;
   return [
     { title: work.title || `${work.name} — Works — Captionz` },
     {

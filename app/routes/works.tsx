@@ -5,7 +5,7 @@ import { Footline } from "../components/Common/Footline";
 import { getDatabase } from "../db/getDb";
 import { works, type Work as DbWork } from "../db/schema";
 import { eq, or, like, and, count, asc } from "drizzle-orm";
-import { worksData as fallbackWorksData, type WorkItem } from "../data/worksData";
+import type { WorkItem } from "../types/work";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -116,39 +116,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     }
   }
 
-  // Graceful fallback from worksData.ts
-  let filtered = fallbackWorksData;
-
-  if (category !== "all") {
-    filtered = filtered.filter((work) => work.category === category);
-  }
-
-  if (q) {
-    filtered = filtered.filter((work) => {
-      const haystack = `${work.name} ${work.title} ${work.sector} ${work.intro} ${work.tag}`.toLowerCase();
-      return haystack.includes(q);
-    });
-  }
-
-  const totalCount = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
-  const paged = filtered.slice(offset, offset + limit).map((w) => ({
-    slug: w.slug,
-    num: w.num,
-    name: w.name,
-    sector: w.sector,
-    category: w.category,
-    tag: w.tag,
-    isPhoto: w.isPhoto,
-    thumb: w.thumb,
-    tint: w.tint,
-    intro: w.intro,
-  }));
-
   return {
-    items: paged,
-    totalCount,
-    totalPages,
+    items: [],
+    totalCount: 0,
+    totalPages: 1,
     currentPage: page,
     currentCategory: category,
     currentQuery: q,
