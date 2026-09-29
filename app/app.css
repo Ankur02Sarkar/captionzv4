@@ -227,8 +227,12 @@ input, textarea {
 
 .topbar > * { pointer-events: auto; }
 
-.topbar__mark { width: 30px; }
-.topbar__mark svg { display: block; width: 100%; height: auto; }
+.topbar__mark {
+  display: none;
+  width: 30px;
+}
+.topbar__mark svg,
+.topbar__mark img { display: block; width: 100%; height: auto; }
 .topbar__mark.is-dark { color: var(--charcoal); }
 .topbar__mark.is-light { color: var(--warm-white); }
 
@@ -238,6 +242,7 @@ input, textarea {
   gap: 5px;
   padding: 10px;
   margin: -10px;
+  margin-left: auto;
 }
 
 .menu-toggle span {
@@ -606,6 +611,7 @@ body.menu-open { overflow: hidden; }
 @media (max-width: 860px) {
   .shell { grid-template-columns: 1fr; }
   .rail { display: none; }
+  .topbar__mark { display: block; }
   .main { padding: 0 20px; }
   .content-head { padding-top: 120px; }
 }
