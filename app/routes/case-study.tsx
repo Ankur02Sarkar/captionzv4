@@ -316,6 +316,7 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                     <img
                       src={item.heroImage}
                       alt={`${item.client} — ${item.title}`}
+                      className="case-card__hero-img"
                       loading="lazy"
                     />
                     {item.clientLogo && (
@@ -334,18 +335,7 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                       <span className="case-card__year">{item.year}</span>
                     </div>
 
-                    <div className="case-card__client-row">
-                      {item.clientLogo && (
-                        <div className="case-card__client-avatar" aria-hidden="true">
-                          <img
-                            src={item.clientLogo}
-                            alt=""
-                            loading="lazy"
-                          />
-                        </div>
-                      )}
-                      <h2 className="case-card__name">{item.client}</h2>
-                    </div>
+                    <h2 className="case-card__name">{item.client}</h2>
                     <h3 className="case-card__title">{item.title}</h3>
                     <p className="case-card__line">{item.tagline}</p>
 
