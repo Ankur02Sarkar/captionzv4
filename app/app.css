@@ -1075,6 +1075,7 @@ body.menu-open { overflow: hidden; }
   width: 100%;
   overflow: hidden;
   background: #EEE9DF;
+  cursor: pointer;
 }
 .home-hero video,
 .home-hero__poster {

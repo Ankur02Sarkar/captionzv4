@@ -24,7 +24,6 @@ export default function Home() {
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isStatementOpenRef = useRef(false);
   const isMenuOpenRef = useRef(isMenuOpen);
-  const lastClosedViaClickRef = useRef<number>(0);
 
   useEffect(() => {
     isMenuOpenRef.current = isMenuOpen;
@@ -40,7 +39,6 @@ export default function Home() {
   useEffect(() => {
     const handleMouseMove = () => {
       if (isMenuOpenRef.current) return;
-      if (Date.now() - lastClosedViaClickRef.current < 600) return;
 
       if (!isStatementOpenRef.current) {
         isStatementOpenRef.current = true;
@@ -79,26 +77,26 @@ export default function Home() {
     };
   }, []);
 
-  const handleToggleStatement = () => {
-    setIsStatementOpen((prev) => {
-      const next = !prev;
-      isStatementOpenRef.current = next;
+  const handlePageClick = (e: React.MouseEvent) => {
+    if (isMenuOpen) return;
 
-      if (idleTimerRef.current) {
-        clearTimeout(idleTimerRef.current);
-      }
+    // Don't trigger if user is selecting text
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
 
-      if (next) {
-        idleTimerRef.current = setTimeout(() => {
-          isStatementOpenRef.current = false;
-          setIsStatementOpen(false);
-        }, 5000);
-      } else {
-        lastClosedViaClickRef.current = Date.now();
-      }
+    const target = e.target as HTMLElement | null;
+    // Don't intercept clicks on navigation links, topbar menu toggle, or inside overlay menu
+    if (
+      target?.closest("a") ||
+      target?.closest(".menu-toggle") ||
+      target?.closest(".overlay-menu")
+    ) {
+      return;
+    }
 
-      return next;
-    });
+    setIsMenuOpen(true);
   };
 
   useEffect(() => {
@@ -125,7 +123,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="reveal-root" style={{ background: "#EDE7DC", minHeight: "100vh" }}>
+    <div
+      className="reveal-root"
+      style={{ background: "#EDE7DC", minHeight: "100vh" }}
+      onClick={handlePageClick}
+    >
       <GatewayVeil />
 
       <Topbar
@@ -168,7 +170,8 @@ export default function Home() {
               type="button"
               aria-expanded={isStatementOpen}
               aria-describedby="stepReveal"
-              onClick={handleToggleStatement}
+              onFocus={() => setIsStatementOpen(true)}
+              onClick={() => setIsMenuOpen(true)}
             >
               Step into the <em>gateway</em> of branding — Captionz
             </button>

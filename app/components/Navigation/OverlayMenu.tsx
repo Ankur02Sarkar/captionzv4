@@ -54,7 +54,12 @@ export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
   ];
 
   return (
-    <nav className="overlay-menu" aria-label="Primary" aria-hidden={!isOpen}>
+    <nav
+      className="overlay-menu"
+      aria-label="Primary"
+      aria-hidden={!isOpen}
+      onClick={(e) => e.stopPropagation()}
+    >
       <img className="overlay-menu__gateway" src="/assets/gateway-icon.png" alt="" />
       <button
         className="menu-toggle overlay-menu__close"
