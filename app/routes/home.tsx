@@ -91,7 +91,8 @@ export default function Home() {
     if (
       target?.closest("a") ||
       target?.closest(".menu-toggle") ||
-      target?.closest(".overlay-menu")
+      target?.closest(".overlay-menu") ||
+      target?.closest(".global-back-btn")
     ) {
       return;
     }
