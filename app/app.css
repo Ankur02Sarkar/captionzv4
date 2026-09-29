@@ -1870,18 +1870,18 @@ body.menu-open { overflow: hidden; }
 }
 
 .contact-channels__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .contact-card {
   background: #ffffff;
   border: 1.5px solid rgba(23, 19, 15, 0.16);
-  padding: 20px 22px;
+  padding: 16px 20px;
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: center;
+  gap: 16px;
   text-decoration: none;
   color: inherit;
   box-shadow: 0 4px 14px -4px rgba(23, 19, 15, 0.06);
@@ -1894,26 +1894,22 @@ body.menu-open { overflow: hidden; }
   transform: translateY(-2px);
 }
 
-.contact-card--full {
-  grid-column: 1 / -1;
-}
-
 .contact-card__icon-box {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(222, 27, 16, 0.1);
   color: var(--red);
   flex-shrink: 0;
-  margin-top: 1px;
 }
 
 .contact-card__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1927,10 +1923,10 @@ body.menu-open { overflow: hidden; }
 }
 
 .contact-card__val {
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 600;
   color: var(--charcoal);
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .contact-frame {
