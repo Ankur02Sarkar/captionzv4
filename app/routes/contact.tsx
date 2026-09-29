@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Route } from "./+types/contact";
 import { ShellLayout } from "../components/Layout/ShellLayout";
+import { Footline } from "../components/Common/Footline";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -66,30 +67,29 @@ export default function Contact() {
     }, 5000);
   };
 
-  const currentYear = new Date().getFullYear();
-
   return (
     <ShellLayout activeSection="contact">
       <div className="contact-wrap">
-        <main className="contact-col main" style={{ paddingLeft: 0 }}>
-          <p className="eyebrow reveal">Let's Connect</p>
-          <h1
-            className="h-hero reveal d1"
-            style={{ fontSize: "clamp(38px, 5.6vw, 64px)" }}
-          >
-            Let's build
-            <br />
-            what matters
-            <span style={{ color: "var(--red)" }}>.</span>
-          </h1>
-          <p className="lede reveal d2">
-            Have a project in mind? We'd love to hear about it.
-          </p>
+        <main className="contact-col main">
+          <div className="contact-intro">
+            <p className="eyebrow reveal">Let's Connect</p>
+            <h1
+              className="h-hero reveal d1"
+              style={{ fontSize: "clamp(38px, 5.6vw, 64px)" }}
+            >
+              Let's build
+              <br />
+              what matters
+              <span style={{ color: "var(--red)" }}>.</span>
+            </h1>
+            <p className="lede reveal d2">
+              Have a project in mind? We'd love to hear about it.
+            </p>
+          </div>
 
           <form
-            className="reveal d3"
+            className="contact-form reveal d3"
             id="contactForm"
-            style={{ marginTop: "40px", maxWidth: "560px" }}
             noValidate
             onSubmit={handleSubmit}
           >
@@ -100,7 +100,7 @@ export default function Contact() {
                   type="text"
                   id="name"
                   name="name"
-                  placeholder="Enter your name"
+                  placeholder="e.g. Anand Sharma"
                   autoComplete="name"
                   value={formData.name}
                   onChange={(e) => {
@@ -116,7 +116,7 @@ export default function Contact() {
                   type="email"
                   id="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="e.g. anand@company.com"
                   autoComplete="email"
                   value={formData.email}
                   onChange={(e) => {
@@ -129,12 +129,12 @@ export default function Contact() {
             </div>
 
             <div className="field">
-              <label htmlFor="company">Company</label>
+              <label htmlFor="company">Company / Organization</label>
               <input
                 type="text"
                 id="company"
                 name="company"
-                placeholder="Enter your company"
+                placeholder="e.g. Acme Corporation"
                 autoComplete="organization"
                 value={formData.company}
                 onChange={(e) =>
@@ -148,8 +148,8 @@ export default function Contact() {
               <textarea
                 id="message"
                 name="message"
-                rows={1}
-                placeholder="Share a few details…"
+                rows={3}
+                placeholder="Share your goals, challenges, scope, or timeline…"
                 value={formData.message}
                 onChange={(e) => {
                   setFormData({ ...formData, message: e.target.value });
@@ -163,7 +163,7 @@ export default function Contact() {
 
             <div className="submit-row">
               <button type="submit">
-                Send Message
+                <span>Send Message</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M5 12h14M13 6l6 6-6 6"
@@ -180,47 +180,71 @@ export default function Contact() {
             </div>
           </form>
 
-          <div className="contact-details reveal d4">
-            <div className="contact-details__item">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M3 8l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                />
-              </svg>
-              <a href="mailto:capt@captionz.biz">capt@captionz.biz</a>
-            </div>
-            <div className="contact-details__item">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .7 3a2 2 0 01-.4 2.1L8 10.3a16 16 0 006 6l1.5-1.5a2 2 0 012.1-.4c1 .4 2 .6 3 .7a2 2 0 011.7 2z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                />
-              </svg>
-              <a href="tel:+919849818165">+91 98498 18165</a>
-            </div>
-            <div className="contact-details__item">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 21s7-6.6 7-11.5A7 7 0 105 9.5C5 14.4 12 21 12 21z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                />
-                <circle cx="12" cy="9.5" r="2.2" stroke="currentColor" strokeWidth="1.4" />
-              </svg>
-              <span>
-                Captionz, 301/301A, Suryakiran Complex,
-                <br />
-                SD Road, Sec-bad, Hyderabad – 500003
-              </span>
+          {/* Coordinates & Direct Channels */}
+          <div className="contact-channels reveal d4">
+            <span className="contact-channels__eyebrow">Studio Coordinates &amp; Direct Channels</span>
+            <div className="contact-channels__grid">
+              <a href="mailto:capt@captionz.biz" className="contact-card">
+                <div className="contact-card__icon-box">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 8l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+                <div className="contact-card__body">
+                  <span className="contact-card__label">Email</span>
+                  <span className="contact-card__val">capt@captionz.biz</span>
+                </div>
+              </a>
+
+              <a href="tel:+919849818165" className="contact-card">
+                <div className="contact-card__icon-box">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .7 3a2 2 0 01-.4 2.1L8 10.3a16 16 0 006 6l1.5-1.5a2 2 0 012.1-.4c1 .4 2 .6 3 .7a2 2 0 011.7 2z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+                <div className="contact-card__body">
+                  <span className="contact-card__label">Direct Phone</span>
+                  <span className="contact-card__val">+91 98498 18165</span>
+                </div>
+              </a>
+
+              <div className="contact-card contact-card--full">
+                <div className="contact-card__icon-box">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 21s7-6.6 7-11.5A7 7 0 105 9.5C5 14.4 12 21 12 21z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <circle cx="12" cy="9.5" r="2.2" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                </div>
+                <div className="contact-card__body">
+                  <span className="contact-card__label">Hyderabad Atelier</span>
+                  <span className="contact-card__val">
+                    Captionz, 301/301A, Suryakiran Complex, SD Road, Sec-bad, Hyderabad – 500003
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <footer className="footline" style={{ marginTop: "20px" }}>
-            <span>&copy; {currentYear} Captionz. All rights reserved.</span>
-          </footer>
+          <Footline
+            links={[
+              { href: "/case-study", label: "Case Study" },
+              { href: "/works", label: "Works" },
+              { href: "/about", label: "About Us" },
+            ]}
+            style={{ marginTop: "48px" }}
+          />
         </main>
 
         <div className="contact-frame reveal d2">

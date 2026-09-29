@@ -13,6 +13,40 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+interface TeamMember {
+  name: string;
+  designation: string;
+  image: string;
+}
+
+const teamMembers: TeamMember[] = [
+  {
+    name: "Capt. SN Ahmed",
+    designation: "Founder, Managing Director & Creative Head",
+    image: "https://pub-97c17fb137b447f6a52871a6328a8f1a.r2.dev/team/sn-ahmed.jpg",
+  },
+  {
+    name: "Syed Wajahath Ali",
+    designation: "Art Director",
+    image: "https://pub-97c17fb137b447f6a52871a6328a8f1a.r2.dev/team/syed-wajahath-ali.jpg",
+  },
+  {
+    name: "Lokesh Kumar Baisiwala",
+    designation: "Business Head",
+    image: "https://pub-97c17fb137b447f6a52871a6328a8f1a.r2.dev/team/lokesh-kumar.jpg",
+  },
+  {
+    name: "Zee",
+    designation: "Graphic Designer",
+    image: "https://pub-97c17fb137b447f6a52871a6328a8f1a.r2.dev/team/zee.jpg",
+  },
+  {
+    name: "Asim Shaikh",
+    designation: "Sr. Graphic Designer",
+    image: "https://pub-97c17fb137b447f6a52871a6328a8f1a.r2.dev/team/asim-shaikh.jpg",
+  },
+];
+
 export default function About() {
   return (
     <ShellLayout activeSection="about">
@@ -60,6 +94,46 @@ export default function About() {
             <div className="do__item">Printing &amp; Packaging</div>
             <div className="do__item">Event Planning</div>
             <div className="do__item">Digital Marketing Content</div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="about-team reveal">
+          <div className="about-team__head">
+            <div>
+              <p className="eyebrow">The Thinkers &amp; Makers</p>
+              <h2 className="h-hero" style={{ fontSize: "clamp(32px, 4.5vw, 54px)" }}>
+                Leadership &amp; Team
+              </h2>
+            </div>
+            <p className="about-team__lead">
+              The creative minds and strategic operators dedicated to transforming businesses into indelible cultural identities.
+            </p>
+          </div>
+
+          <div className="about-team__grid">
+            {teamMembers.map((member, idx) => (
+              <div
+                key={member.name}
+                className={`team-card reveal d${(idx % 4) + 1}`}
+              >
+                <div className="team-card__visual">
+                  <span className="team-card__index">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <img
+                    src={member.image}
+                    alt={`${member.name} — ${member.designation}`}
+                    loading="lazy"
+                  />
+                  <div className="team-card__overlay" aria-hidden="true" />
+                </div>
+                <div className="team-card__content">
+                  <span className="team-card__role">{member.designation}</span>
+                  <h3 className="team-card__name">{member.name}</h3>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
