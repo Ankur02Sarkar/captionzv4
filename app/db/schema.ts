@@ -4,6 +4,7 @@ export const caseStudies = sqliteTable("case_studies", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   client: text("client").notNull(),
+  clientLogo: text("client_logo"),
   title: text("title").notNull(),
   industry: text("industry").notNull(),
   category: text("category").notNull(),

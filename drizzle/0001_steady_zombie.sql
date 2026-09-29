@@ -1,0 +1,1 @@
+ALTER TABLE `case_studies` ADD `client_logo` text;

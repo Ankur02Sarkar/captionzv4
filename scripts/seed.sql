@@ -4,109 +4,109 @@ DELETE FROM case_studies;
 DELETE FROM works;
 
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'bradsol-rebrand', 'bradsol-rebrand', 'Bradsol', 'IT Brand Identity & INDIASOFT Exhibition Domination',
       'Enterprise IT & Software', 'Branding', 2024, 'Turning trade-show noise into high-tension client conversations.',
-      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=Bradsol+Enterprise+Identity+%26+Exhibition', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=INDIASOFT+Booth+Architecture","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Brand+Identity+Guidelines","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Executive+Collateral+Suite"]', 'Bradsol is a leading enterprise IT software solutions provider in Hyderabad. Entering major national and international trade shows like INDIASOFT required more than a generic corporate deck — it demanded a high-impact brand system that turned booth traffic into executive-level leads.',
+      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=Bradsol+Enterprise+Identity+%26+Exhibition', 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Bradsol', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=INDIASOFT+Booth+Architecture","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Brand+Identity+Guidelines","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Executive+Collateral+Suite"]', 'Bradsol is a leading enterprise IT software solutions provider in Hyderabad. Entering major national and international trade shows like INDIASOFT required more than a generic corporate deck — it demanded a high-impact brand system that turned booth traffic into executive-level leads.',
       'In the crowded IT sector, most brands look identical: muted blues, stock technology graphics, and passive messaging. Bradsol was losing attention to louder competitors despite offering superior technical capability.', 'We built a high-tension visual language using aggressive contrasts, sharp geometric lockups, and unhinged messaging precision. We designed their INDIASOFT exhibition booth not as a display wall, but as an immersive sales machine where every panel acted like a senior marketing executive.', '[{"label": "Qualified Booth Leads at INDIASOFT", "value": "+320%"}, {"label": "Increase in Post-Event Executive Meetings", "value": "4.8x"}, {"label": "Brand Recall Among Target IT Decision Makers", "value": "100%"}]',
       '{"quote": "Captionz has customer-focused attention and feedback that impressed me. Right from the booth design to executive collateral, their creatives worked like dedicated marketing executives on the floor.", "title": "Director, Bradsol", "author": "Abhishek Bhattad"}', '["Brand Strategy & Positioning","Visual Identity System","Exhibition Architecture","Environmental Graphics","Print Collateral"]', NULL,
       1, '2026-08-02 08:58:15.894', '2026-08-02 08:58:15.894'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'caroman-social-campaigns', 'caroman-social-campaigns', 'Caroman', 'High-Rhythm Social Strategy & Scroll-Stopping Creatives',
       'Consumer & Digital', 'Social Media', 2025, 'Turning social posts into persistent, high-tension brand assets.',
-      'https://dummyimage.com/1200x675/1a1c1c/ffffff.png&text=Caroman+Social+Campaign+System', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Campaign+Grid+Layout","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Motion+Graphics+Frames","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Content+Pillars+System"]', 'Caroman required an aggressive digital campaign engine to capture social mindshare and convert passive viewers into loyal brand advocates.',
+      'https://dummyimage.com/1200x675/1a1c1c/ffffff.png&text=Caroman+Social+Campaign+System', 'https://dummyimage.com/400x400/1a1c1c/ffffff.png&text=Caroman', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Campaign+Grid+Layout","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Motion+Graphics+Frames","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Content+Pillars+System"]', 'Caroman required an aggressive digital campaign engine to capture social mindshare and convert passive viewers into loyal brand advocates.',
       'Social media algorithms favor volume, but brands often compromise quality for frequency — leading to generic feeds that disappear in the scroll.', 'We engineered a modular creative engine: structured layout frames, provocative copy hooks, and high-tension typography that made every single post immediately recognizable as Caroman.', '[{"label": "Organic Social Engagement", "value": "+450%"}, {"label": "Click-Through Rate to Platform", "value": "3.2x"}, {"label": "Boring Posts Allowed", "value": "0"}]',
       NULL, '["Digital Campaign Strategy","Social Creative System","Motion & Graphic Templates","Content Pillar Guide"]', NULL,
       1, '2026-08-02 08:58:16.798', '2026-08-02 08:58:16.798'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'credible-insurance-rebellion', 'credible-insurance-rebellion', 'Credible Insurance', 'Trust Without Boring: A Modern Financial Identity',
       'Financial Services & Insurance', 'Print', 2023, 'Injecting urgency and confidence into financial risk management.',
-      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=Credible+Insurance+Brand+System', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=WOW+Creative+Print+Collateral","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Corporate+Policy+Dossier","https://dummyimage.com/800x600/eeeeee/bc0100.png&text=Digital+Campaign+Frames"]', 'Credible Insurance needed a complete refresh of their corporate brand collateral to project modern authority, absolute reliability, and high clarity.',
+      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=Credible+Insurance+Brand+System', 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Credible', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=WOW+Creative+Print+Collateral","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Corporate+Policy+Dossier","https://dummyimage.com/800x600/eeeeee/bc0100.png&text=Digital+Campaign+Frames"]', 'Credible Insurance needed a complete refresh of their corporate brand collateral to project modern authority, absolute reliability, and high clarity.',
       'Insurance collateral is notorious for small print, dreary blue templates, and jargon-dense brochures that bore potential clients before pitch meetings even begin.', 'We injected high-tension design into every touchpoint — crisp uppercase lockups, high-contrast red accents, and simplified information hierarchy. The result was what the client coined ''WOW creatives''.', '[{"label": "Client Retention Rate", "value": "3x"}, {"label": "Engagement on Direct Mailers", "value": "+210%"}, {"label": "Alignment Across Advisor Network", "value": "100%"}]',
       '{"quote": "Capt. Ahmed put his creative skills to work and what emerged were ''WOW creatives'' that our clients still talk about years later.", "title": "Credible Insurance", "author": "Jagruti Chandrashekhar"}', '["Corporate Identity Refresh","Print Collateral Suite","Sales Dossier System","Campaign Assets"]', NULL,
       1, '2026-08-02 08:58:16.583', '2026-08-02 08:58:16.583'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'gofin-home-loans', 'gofin-home-loans', 'GOFIN Home Loans', 'From Loan Anxiety to Home Happiness',
       'Financial Services & Advisory', 'Branding', 2023, 'Relax. We handle the process while you focus on your dream home.',
-      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=GOFIN+Home+Loans+Case+Study', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=GOFIN+3-Stage+Logo+Journey","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=3-Year+Brand+Roadmap"]', 'GOFIN is a loan advisory and disbursement firm founded by Ramakrishna (''Ramki''), an industry veteran with 10+ years experience. Captionz transformed a founder-led business into a recognized financial brand.',
+      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=GOFIN+Home+Loans+Case+Study', 'https://dummyimage.com/400x400/00a3e9/ffffff.png&text=Gofin', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=GOFIN+3-Stage+Logo+Journey","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=3-Year+Brand+Roadmap"]', 'GOFIN is a loan advisory and disbursement firm founded by Ramakrishna (''Ramki''), an industry veteran with 10+ years experience. Captionz transformed a founder-led business into a recognized financial brand.',
       'People trusted Ramki individually, but didn''t know GOFIN. Loan seekers were confused by intimidating paperwork, multiple lenders, and decision anxiety when making the biggest financial decision of their lives.', 'Instead of selling loans, Captionz sold confidence. We designed a 3-stage logo reflecting the customer journey (Dreams Begin → Decision Anxiety → Guidance & Fulfillment) and executed a 3-year brand strategy (Trust → Recall → Personality).', '[{"label": "Market Recognition Surge", "value": "100%"}, {"label": "Strategic Brand Roadmap", "value": "3-Yr"}, {"label": "Bank VP & Director Visibility", "value": "Top"}]',
       NULL, '["Logo Architecture & Visual Identity","3-Year Brand Roadmap","Campaign Experience Design","Banking Partner Collateral"]', 'https://oyrepmmwezligdoimphr.supabase.co/storage/v1/object/public/Assets/Gofin%20Case%20Study.pdf',
       1, '2026-08-02 08:58:16.854', '2026-08-02 08:58:16.854'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'labelle-body-care', 'labelle-body-care', 'Labelle', 'Transforming Body Care into a Household Brand Icon',
       'Beauty & Personal Care', 'Branding', 2022, 'Proving that names become iconic brands through relentless design.',
-      'https://dummyimage.com/1200x675/5e5e5e/ffffff.png&text=Labelle+Body+Care+Brand+Transformation', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Luxury+Product+Lineup","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Retail+Shelf+Design","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Social+Media+Visual+Language"]', 'Labelle Skin & Hair Clinic aimed to expand its body care product footprint. Captionz was tasked with crafting a complete brand identity and packaging suite that reads as instant shelf-ready luxury.',
+      'https://dummyimage.com/1200x675/5e5e5e/ffffff.png&text=Labelle+Body+Care+Brand+Transformation', 'https://dummyimage.com/400x400/5e5e5e/ffffff.png&text=Labelle', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Luxury+Product+Lineup","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Retail+Shelf+Design","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Social+Media+Visual+Language"]', 'Labelle Skin & Hair Clinic aimed to expand its body care product footprint. Captionz was tasked with crafting a complete brand identity and packaging suite that reads as instant shelf-ready luxury.',
       'D2C and retail shelves are saturated with generic aesthetic brands. Labelle needed a distinct visual marker that commanded consumer attention in under two seconds.', 'We applied our core philosophy: ''Making Names Into Brands.'' We engineered a refined typographic mark combined with product-led color palettes and tactile print finishes that established Labelle as an undisputed category benchmark.', '[{"label": "Retail Shelf Presence Expansion", "value": "10x"}, {"label": "Brand Equity Growth", "value": "+140%"}, {"label": "Most Recognized Regional Body Care Mark", "value": "#1"}]',
       '{"quote": "As Captionz always said ''they made names to Brand'' and Labelle is the biggest example. The visual identity they built opened doors we couldn''t access before.", "title": "Labelle Skin & Hair Clinic", "author": "Deepak Mittal"}', '["Brand Strategy & Identity","Product Packaging Design","Retail Merchandising Assets","Creative Direction"]', NULL,
       1, '2026-08-02 08:58:16.493', '2026-08-02 08:58:16.493'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'libr-minimal-mark', 'libr-minimal-mark', 'LIBR', 'Ultra-Minimal Visual Mark & Corporate Stationery',
       'Corporate & Consulting', 'Branding', 2022, 'Minimalism meets maximal impact in corporate identity.',
-      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=LIBR+Minimal+Corporate+Mark', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Executive+Stationery+Set","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Digital+Screen+Lockups","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Signage+Guidelines"]', 'LIBR needed a sharp, uncluttered visual mark and executive stationery set that projected authority and timeless elegance.',
+      'https://dummyimage.com/1200x675/bc0100/ffffff.png&text=LIBR+Minimal+Corporate+Mark', 'https://dummyimage.com/400x400/1a1c1c/ffffff.png&text=LIBR', '["https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Executive+Stationery+Set","https://dummyimage.com/800x600/5e5e5e/ffffff.png&text=Digital+Screen+Lockups","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Signage+Guidelines"]', 'LIBR needed a sharp, uncluttered visual mark and executive stationery set that projected authority and timeless elegance.',
       'Creating a minimal logo that is distinct and memorable requires extreme precision, avoiding generic corporate geometry.', 'We developed a stark monochrome mark with razor-thin line accents and high-contrast typography that stands out effortlessly on stationery, digital signatures, and office signage.', '[{"label": "Executive Board Approval", "value": "100%"}, {"label": "Clutter Allowed", "value": "0"}, {"label": "Years of Timeless Application", "value": "5+"}]',
       NULL, '["Logo & Monogram Architecture","Executive Stationery","Digital Brand Kit","Office Signage Standards"]', NULL,
       1, '2026-08-02 08:58:16.734', '2026-08-02 08:58:16.734'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'little-buddy-branding', 'little-buddy-branding', 'Little Buddy', 'Playful yet Disciplined Consumer Brand Identity',
       'Consumer Products', 'Branding', 2021, 'Building a consumer brand that balances joy with commercial discipline.',
-      'https://dummyimage.com/1200x675/2f3131/ffffff.png&text=Little+Buddy+Consumer+Identity', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Product+Packaging+Suite","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Retail+Display+Mockup","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Brand+Character+Design"]', 'Little Buddy required a vibrant consumer brand system capable of performing seamlessly across physical packaging, digital marketplaces, and retail displays.',
+      'https://dummyimage.com/1200x675/2f3131/ffffff.png&text=Little+Buddy+Consumer+Identity', 'https://dummyimage.com/400x400/2f3131/ffffff.png&text=Little+Buddy', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Product+Packaging+Suite","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Retail+Display+Mockup","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Brand+Character+Design"]', 'Little Buddy required a vibrant consumer brand system capable of performing seamlessly across physical packaging, digital marketplaces, and retail displays.',
       'Consumer brands targeting families often become chaotic visually when attempting to feel approachable, losing brand consistency across product variants.', 'We designed a structured typographic grid and cheerful color palette anchored by strict brand guidelines, allowing the identity to remain playful while scaling commercial SKU lines.', '[{"label": "Retail Distributor Pickup", "value": "+180%"}, {"label": "Positive Packaging Perception", "value": "98%"}, {"label": "SKUs Launched Seamlessly", "value": "12+"}]',
       NULL, '["Visual Identity System","Packaging Guidelines","Retail Display Mockups","Brand Character Styling"]', NULL,
       1, '2026-08-02 08:58:16.667', '2026-08-02 08:58:16.667'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'minitech-industrial-floors', 'minitech-industrial-floors', 'Minitech', 'Elevating Heavy Industrial Flooring into Premium Architecture',
       'Industrial & Infrastructure', 'Packaging', 2023, 'Making industrial grade flooring feel like shelf-ready luxury.',
-      'https://dummyimage.com/1200x675/1a1c1c/ffffff.png&text=Minitech+Industrial+Floors+Identity', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Sample+Kit+Packaging+System","https://dummyimage.com/800x600/2f3131/ffffff.png&text=Technical+Specification+Catalog","https://dummyimage.com/800x600/eeeeee/bc0100.png&text=On-Site+Branding+Assets"]', 'Minitech Floorings specializes in heavy-duty industrial flooring systems. They needed a brand evolution that matched the high technical precision of their engineering and resonated with architects, project managers, and factory owners.',
+      'https://dummyimage.com/1200x675/1a1c1c/ffffff.png&text=Minitech+Industrial+Floors+Identity', 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Minitech', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Sample+Kit+Packaging+System","https://dummyimage.com/800x600/2f3131/ffffff.png&text=Technical+Specification+Catalog","https://dummyimage.com/800x600/eeeeee/bc0100.png&text=On-Site+Branding+Assets"]', 'Minitech Floorings specializes in heavy-duty industrial flooring systems. They needed a brand evolution that matched the high technical precision of their engineering and resonated with architects, project managers, and factory owners.',
       'Industrial flooring is traditionally seen as a commoditized utility purchase. Minitech’s previous identity failed to convey their technological superiority, forcing them to compete on price rather than value.', 'We transformed Minitech''s sample packaging and proposal decks into heavy-weight architectural presentation artifacts. Utilizing bold typography, dark surfaces, and structured technical layouts, we elevated industrial flooring into a high-value architectural choice.', '[{"label": "Higher Proposal Win Rate", "value": "2.5x"}, {"label": "Rave Client Feedback on First Pitch", "value": "+85%"}, {"label": "Price Resistance from Industrial Clients", "value": "0%"}]',
       '{"quote": "Right from the first creative massage, each client of ours gave rave reviews. Captionz gave our industrial product line the premium weight it deserved.", "title": "Founder, Minitech Industrial Floorings", "author": "Prem Nath Mammidi"}', '["Product Packaging Architecture","Technical Sample Kits","Proposal Presentation System","Brand Evolution Strategy"]', NULL,
       1, '2026-08-02 08:58:16.399', '2026-08-02 08:58:16.399'
     );
 INSERT INTO case_studies (
-      id, slug, client, title, industry, category, year, tagline, hero_image,
+      id, slug, client, title, industry, category, year, tagline, hero_image, client_logo,
       gallery_images, overview, challenge, strategy, results, testimonial,
       deliverables, external_url, published, created_at, updated_at
     ) VALUES (
       'mlrit-brand-architecture', 'mlrit-brand-architecture', 'MLRIT', 'Campus-Wide Educational Brand System & Identity',
       'Education & Institutions', 'Strategy', 2022, 'Building institutional pride through sharp, modern communication.',
-      'https://dummyimage.com/1200x675/5e5e5e/ffffff.png&text=MLRIT+Institutional+Identity', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Campus+Environmental+Branding","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Admissions+Campaign+Suite","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Student+Handbook+%26+Assets"]', 'MLRIT required a unified educational brand ecosystem capable of communicating ambition, academic rigor, and modern campus life to students, faculty, and industry partners.',
+      'https://dummyimage.com/1200x675/5e5e5e/ffffff.png&text=MLRIT+Institutional+Identity', 'https://dummyimage.com/400x400/5e5e5e/ffffff.png&text=MLRIT', '["https://dummyimage.com/800x600/bc0100/ffffff.png&text=Campus+Environmental+Branding","https://dummyimage.com/800x600/1a1c1c/ffffff.png&text=Admissions+Campaign+Suite","https://dummyimage.com/800x600/eeeeee/1a1c1c.png&text=Student+Handbook+%26+Assets"]', 'MLRIT required a unified educational brand ecosystem capable of communicating ambition, academic rigor, and modern campus life to students, faculty, and industry partners.',
       'Large institutions often suffer from fragmented sub-brands, inconsistent promotional materials, and outdated visual touchpoints.', 'We created a unified visual architecture with clear brand hierarchy, bold promotional templates, and campus environmental signage guidelines that elevated MLRIT''s standing across South India.', '[{"label": "Admissions Inquiry Surge", "value": "+95%"}, {"label": "Brand Consistency Across 12 Departments", "value": "100%"}, {"label": "Most Recognized Tech Campus Identity", "value": "Top 5"}]',
       NULL, '["Institutional Brand System","Campus Environmental Design","Admissions Campaign Suite","Departmental Brand Guidelines"]', NULL,
       1, '2026-08-02 08:58:16.828', '2026-08-02 08:58:16.828'

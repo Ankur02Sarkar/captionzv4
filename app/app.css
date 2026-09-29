@@ -1724,4 +1724,103 @@ body.menu-open { overflow: hidden; }
   }
 }
 
+/* ==========================================================================
+   Case Study Client Logos
+   ========================================================================== */
+.case-card__logo-badge {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  width: 48px;
+  height: 48px;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.case-card__logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  display: block;
+}
+
+.case-card:hover .case-card__logo-badge {
+  transform: translateY(-2px);
+  border-color: var(--charcoal);
+}
+
+.case-card__client-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.case-card__client-avatar {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  background: var(--warm-white);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.case-card__client-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  display: block;
+}
+
+.cs-detail-header-top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.cs-detail-brand-badge {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.cs-detail-brand-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .cs-detail-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .cs-detail-brand-badge {
+    width: 54px;
+    height: 54px;
+  }
+}
+
 

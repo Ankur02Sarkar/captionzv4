@@ -1,0 +1,9 @@
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Bradsol' WHERE slug = 'bradsol-rebrand';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/1a1c1c/ffffff.png&text=Caroman' WHERE slug = 'caroman-social-campaigns';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Credible' WHERE slug = 'credible-insurance-rebellion';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/00a3e9/ffffff.png&text=Gofin' WHERE slug = 'gofin-home-loans';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/5e5e5e/ffffff.png&text=Labelle' WHERE slug = 'labelle-body-care';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/1a1c1c/ffffff.png&text=LIBR' WHERE slug = 'libr-minimal-mark';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/2f3131/ffffff.png&text=Little+Buddy' WHERE slug = 'little-buddy-branding';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/bc0100/ffffff.png&text=Minitech' WHERE slug = 'minitech-industrial-floors';
+UPDATE case_studies SET client_logo = 'https://dummyimage.com/400x400/5e5e5e/ffffff.png&text=MLRIT' WHERE slug = 'mlrit-brand-architecture';

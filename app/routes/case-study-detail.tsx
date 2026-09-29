@@ -16,6 +16,7 @@ interface ParsedCaseStudy {
   year: number;
   tagline: string;
   heroImage: string;
+  clientLogo?: string | null;
   galleryImages: string[];
   overview: string;
   challenge: string;
@@ -71,6 +72,7 @@ export async function loader({ params, context }: Route.LoaderArgs) {
           year: r.year,
           tagline: r.tagline,
           heroImage: r.heroImage,
+          clientLogo: r.clientLogo,
           galleryImages: safeParseJson<string[]>(r.galleryImages, []),
           overview: r.overview,
           challenge: r.challenge,
@@ -149,22 +151,33 @@ export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps
 
         {/* Hero Section */}
         <div className="cs-detail-hero reveal">
-          <div className="cs-detail-meta">
-            <div className="cs-detail-meta__item">
-              <span className="cs-detail-meta__label">Client</span>
-              <span className="cs-detail-meta__val">{study.client}</span>
-            </div>
-            <div className="cs-detail-meta__item">
-              <span className="cs-detail-meta__label">Discipline</span>
-              <span className="cs-detail-meta__val">{study.category}</span>
-            </div>
-            <div className="cs-detail-meta__item">
-              <span className="cs-detail-meta__label">Sector</span>
-              <span className="cs-detail-meta__val">{study.industry}</span>
-            </div>
-            <div className="cs-detail-meta__item">
-              <span className="cs-detail-meta__label">Year</span>
-              <span className="cs-detail-meta__val">{study.year}</span>
+          <div className="cs-detail-header-top">
+            {study.clientLogo && (
+              <div className="cs-detail-brand-badge" title={`${study.client} Logo`}>
+                <img
+                  src={study.clientLogo}
+                  alt={`${study.client} logo`}
+                  className="cs-detail-brand-logo"
+                />
+              </div>
+            )}
+            <div className="cs-detail-meta">
+              <div className="cs-detail-meta__item">
+                <span className="cs-detail-meta__label">Client</span>
+                <span className="cs-detail-meta__val">{study.client}</span>
+              </div>
+              <div className="cs-detail-meta__item">
+                <span className="cs-detail-meta__label">Discipline</span>
+                <span className="cs-detail-meta__val">{study.category}</span>
+              </div>
+              <div className="cs-detail-meta__item">
+                <span className="cs-detail-meta__label">Sector</span>
+                <span className="cs-detail-meta__val">{study.industry}</span>
+              </div>
+              <div className="cs-detail-meta__item">
+                <span className="cs-detail-meta__label">Year</span>
+                <span className="cs-detail-meta__val">{study.year}</span>
+              </div>
             </div>
           </div>
 

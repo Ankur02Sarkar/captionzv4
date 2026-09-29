@@ -27,6 +27,7 @@ interface ParsedCaseStudy {
   year: number;
   tagline: string;
   heroImage: string;
+  clientLogo?: string | null;
   galleryImages: string[];
   overview: string;
   challenge: string;
@@ -117,6 +118,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         year: r.year,
         tagline: r.tagline,
         heroImage: r.heroImage,
+        clientLogo: r.clientLogo,
         galleryImages: safeParseJson<string[]>(r.galleryImages, []),
         overview: r.overview,
         challenge: r.challenge,
@@ -316,6 +318,15 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                       alt={`${item.client} — ${item.title}`}
                       loading="lazy"
                     />
+                    {item.clientLogo && (
+                      <div className="case-card__logo-badge" title={`${item.client} logo`}>
+                        <img
+                          src={item.clientLogo}
+                          alt={`${item.client} logo`}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="case-card__body">
                     <div className="case-card__meta-bar">
@@ -323,7 +334,18 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                       <span className="case-card__year">{item.year}</span>
                     </div>
 
-                    <h2 className="case-card__name">{item.client}</h2>
+                    <div className="case-card__client-row">
+                      {item.clientLogo && (
+                        <div className="case-card__client-avatar" aria-hidden="true">
+                          <img
+                            src={item.clientLogo}
+                            alt=""
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                      <h2 className="case-card__name">{item.client}</h2>
+                    </div>
                     <h3 className="case-card__title">{item.title}</h3>
                     <p className="case-card__line">{item.tagline}</p>
 
