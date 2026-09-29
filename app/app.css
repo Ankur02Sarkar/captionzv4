@@ -2105,4 +2105,99 @@ body.menu-open { overflow: hidden; }
   }
 }
 
+/* ==========================================================================
+   Case Study PDF Iframe Viewer
+   ========================================================================== */
+
+.cs-pdf-wrapper {
+  margin: 36px 0 56px;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 40px -12px rgba(26, 28, 28, 0.08);
+}
+
+.cs-pdf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--ivory);
+  gap: 16px;
+}
+
+.cs-pdf-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-pdf-header__tag {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 500;
+}
+
+.cs-pdf-header__name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  letter-spacing: 0.04em;
+}
+
+.cs-pdf-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  text-decoration: none;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  padding: 7px 14px;
+  transition: all 0.25s ease;
+}
+
+.cs-pdf-open-btn:hover {
+  border-color: var(--charcoal);
+  color: var(--red);
+  background: #ffffff;
+}
+
+.cs-pdf-frame-box {
+  width: 100%;
+  height: 85vh;
+  min-height: 700px;
+  position: relative;
+  background: #525659;
+}
+
+.cs-pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .cs-pdf-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+  .cs-pdf-frame-box {
+    height: 75vh;
+    min-height: 500px;
+  }
+}
+
+
 

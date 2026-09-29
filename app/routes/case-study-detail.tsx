@@ -38,6 +38,16 @@ function safeParseJson<T>(raw: any, fallback: T): T {
   }
 }
 
+function isPdfUrl(url?: string | null): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.pathname.toLowerCase().endsWith(".pdf");
+  } catch {
+    return url.toLowerCase().includes(".pdf");
+  }
+}
+
 export async function loader({ params, context }: Route.LoaderArgs) {
   let slug = params.slug;
   if (!slug) {
@@ -126,6 +136,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps) {
   const { study, nextStudy } = loaderData;
+  const isPdf = isPdfUrl(study.externalUrl);
 
   return (
     <ShellLayout railMode="work" activeSection="case-study">
@@ -185,91 +196,126 @@ export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps
           <p className="cs-detail-tagline">{study.tagline}</p>
         </div>
 
-        {/* Hero Banner Visual */}
-        <div className="cd-visual cd-visual--cover reveal d1">
-          <img
-            src={study.heroImage}
-            alt={`${study.client} — ${study.title}`}
-            loading="eager"
-          />
-        </div>
+        {isPdf ? (
+          /* PDF Document Viewer Container */
+          <div className="cs-pdf-wrapper reveal d1">
+            <div className="cs-pdf-header">
+              <div className="cs-pdf-header__meta">
+                <span className="cs-pdf-header__tag">Interactive PDF Presentation</span>
+                <span className="cs-pdf-header__name">{study.client} Dossier</span>
+              </div>
+              <a
+                href={study.externalUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cs-pdf-open-btn"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                <span>Open in New Tab</span>
+              </a>
+            </div>
 
-        {/* High-Tension Editorial Narrative */}
-        <div className="cs-narrative-grid reveal d1">
-          <div className="cs-narrative-card cs-narrative-card--full">
-            <p className="cs-narrative-card__eyebrow">The Overview</p>
-            <p className="cs-narrative-card__body">{study.overview}</p>
-          </div>
-          <div className="cs-narrative-card">
-            <p className="cs-narrative-card__eyebrow">The Friction &amp; Challenge</p>
-            <p className="cs-narrative-card__body">{study.challenge}</p>
-          </div>
-          <div className="cs-narrative-card">
-            <p className="cs-narrative-card__eyebrow">The Strategy &amp; Execution</p>
-            <p className="cs-narrative-card__body">{study.strategy}</p>
-          </div>
-        </div>
-
-        {/* Results Metrics */}
-        {study.results && study.results.length > 0 && (
-          <div className="reveal d2">
-            <p className="eyebrow" style={{ marginTop: "32px", marginBottom: "8px" }}>
-              Quantified Impact
-            </p>
-            <div className="cs-results-grid">
-              {study.results.map((res, i) => (
-                <div key={i} className="cs-result-card">
-                  <span className="cs-result-card__val">{res.value}</span>
-                  <span className="cs-result-card__label">{res.label}</span>
-                </div>
-              ))}
+            <div className="cs-pdf-frame-box">
+              <iframe
+                src={study.externalUrl!}
+                title={`${study.client} — ${study.title}`}
+                className="cs-pdf-frame"
+              />
             </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Hero Banner Visual */}
+            <div className="cd-visual cd-visual--cover reveal d1">
+              <img
+                src={study.heroImage}
+                alt={`${study.client} — ${study.title}`}
+                loading="eager"
+              />
+            </div>
 
-        {/* Testimonial Quote */}
-        {study.testimonial && (
-          <div className="cd-quote reveal">
-            <span className="cd-quote__mark">“</span>
-            <p className="cd-quote__text">{study.testimonial.quote}</p>
-            <span className="cd-quote__attr">
-              {study.testimonial.author} — {study.testimonial.title}
-            </span>
-          </div>
-        )}
+            {/* High-Tension Editorial Narrative */}
+            <div className="cs-narrative-grid reveal d1">
+              <div className="cs-narrative-card cs-narrative-card--full">
+                <p className="cs-narrative-card__eyebrow">The Overview</p>
+                <p className="cs-narrative-card__body">{study.overview}</p>
+              </div>
+              <div className="cs-narrative-card">
+                <p className="cs-narrative-card__eyebrow">The Friction &amp; Challenge</p>
+                <p className="cs-narrative-card__body">{study.challenge}</p>
+              </div>
+              <div className="cs-narrative-card">
+                <p className="cs-narrative-card__eyebrow">The Strategy &amp; Execution</p>
+                <p className="cs-narrative-card__body">{study.strategy}</p>
+              </div>
+            </div>
 
-        {/* Deliverables Panel */}
-        {study.deliverables && study.deliverables.length > 0 && (
-          <div className="cs-deliverables-panel reveal">
-            <p className="cs-detail-meta__label">Deliverables &amp; Systems Engineered</p>
-            <div className="cs-deliverables-list">
-              {study.deliverables.map((item, idx) => (
-                <span key={idx} className="cs-deliverable-item">
-                  {item}
+            {/* Results Metrics */}
+            {study.results && study.results.length > 0 && (
+              <div className="reveal d2">
+                <p className="eyebrow" style={{ marginTop: "32px", marginBottom: "8px" }}>
+                  Quantified Impact
+                </p>
+                <div className="cs-results-grid">
+                  {study.results.map((res, i) => (
+                    <div key={i} className="cs-result-card">
+                      <span className="cs-result-card__val">{res.value}</span>
+                      <span className="cs-result-card__label">{res.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Testimonial Quote */}
+            {study.testimonial && (
+              <div className="cd-quote reveal">
+                <span className="cd-quote__mark">“</span>
+                <p className="cd-quote__text">{study.testimonial.quote}</p>
+                <span className="cd-quote__attr">
+                  {study.testimonial.author} — {study.testimonial.title}
                 </span>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        {/* Gallery Grid */}
-        {study.galleryImages && study.galleryImages.length > 0 && (
-          <div className="reveal">
-            <p className="eyebrow" style={{ marginTop: "32px", marginBottom: "8px" }}>
-              Project Visual Architecture
-            </p>
-            <div className="cs-gallery-grid">
-              {study.galleryImages.map((imgUrl, i) => (
-                <div key={i} className="cs-gallery-item">
-                  <img
-                    src={imgUrl}
-                    alt={`${study.client} showcase frame ${i + 1}`}
-                    loading="lazy"
-                  />
+            {/* Deliverables Panel */}
+            {study.deliverables && study.deliverables.length > 0 && (
+              <div className="cs-deliverables-panel reveal">
+                <p className="cs-detail-meta__label">Deliverables &amp; Systems Engineered</p>
+                <div className="cs-deliverables-list">
+                  {study.deliverables.map((item, idx) => (
+                    <span key={idx} className="cs-deliverable-item">
+                      {item}
+                    </span>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            )}
+
+            {/* Gallery Grid */}
+            {study.galleryImages && study.galleryImages.length > 0 && (
+              <div className="reveal">
+                <p className="eyebrow" style={{ marginTop: "32px", marginBottom: "8px" }}>
+                  Project Visual Architecture
+                </p>
+                <div className="cs-gallery-grid">
+                  {study.galleryImages.map((imgUrl, i) => (
+                    <div key={i} className="cs-gallery-item">
+                      <img
+                        src={imgUrl}
+                        alt={`${study.client} showcase frame ${i + 1}`}
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Next Case Study Link */}
