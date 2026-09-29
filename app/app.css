@@ -892,6 +892,272 @@ body.menu-open { overflow: hidden; }
 }
 
 /* ==========================================================================
+   Case Study Controls & View Switcher (Grid / List)
+   ========================================================================== */
+
+.case-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px;
+}
+
+.case-toolbar .filters {
+  padding: 0;
+  margin: 0;
+  border: none;
+  gap: 20px;
+}
+
+.case-view-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  padding: 3px;
+  border-radius: 2px;
+}
+
+.case-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.case-view-btn:hover {
+  color: var(--charcoal);
+}
+
+.case-view-btn.is-active {
+  background: var(--charcoal);
+  color: var(--warm-white);
+}
+
+.case-view-btn svg {
+  stroke-width: 2px;
+}
+
+/* ==========================================================================
+   Case Study List View Mode
+   ========================================================================== */
+
+.case-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  margin-bottom: 56px;
+}
+
+.case-list-item {
+  display: grid;
+  grid-template-columns: 54px 140px 1fr 240px 32px;
+  align-items: center;
+  gap: 28px;
+  padding: 24px 18px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.case-list-item:hover {
+  background: var(--warm-white);
+}
+
+.case-list-item__logo-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.case-list-item__logo {
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.case-list-item:hover .case-list-item__logo {
+  border-color: var(--charcoal);
+  transform: scale(1.05);
+}
+
+.case-list-item__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  display: block;
+}
+
+.case-list-item__visual {
+  width: 140px;
+  aspect-ratio: 16 / 10;
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.case-list-item__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+.case-list-item:hover .case-list-item__visual img {
+  transform: scale(1.05);
+}
+
+.case-list-item__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.case-list-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.case-list-item__category {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 500;
+}
+
+.case-list-item__dot {
+  color: var(--stone-light);
+}
+
+.case-list-item__year {
+  color: var(--stone);
+  font-family: var(--font-display);
+}
+
+.case-list-item__client {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.case-list-item__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  opacity: 0.85;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.case-list-item__tagline {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--stone);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.case-list-item__extra {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.case-list-item__deliverables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.case-list-item__action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.case-list-item__arrow {
+  color: var(--stone);
+  transition: transform 0.3s var(--ease-soft), color 0.3s;
+  display: flex;
+}
+
+.case-list-item:hover .case-list-item__arrow {
+  transform: translate(3px, -3px);
+  color: var(--red);
+}
+
+/* Responsive List View */
+@media (max-width: 1024px) {
+  .case-list-item {
+    grid-template-columns: 50px 110px 1fr auto;
+    gap: 18px;
+    padding: 20px 12px;
+  }
+  .case-list-item__extra {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .case-list-item {
+    grid-template-columns: 46px 1fr 24px;
+    gap: 14px;
+    padding: 16px 8px;
+  }
+  .case-list-item__visual {
+    display: none;
+  }
+  .case-list-item__title {
+    white-space: normal;
+  }
+}
+
+/* ==========================================================================
    Case-study detail pages (editorial visual journey)
    ========================================================================== */
 

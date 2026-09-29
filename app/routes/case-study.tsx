@@ -170,8 +170,9 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
   } = loaderData;
 
   const [searchParams] = useSearchParams();
+  const currentView = searchParams.get("view") === "list" ? "list" : "grid";
 
-  function makeUrl(overrides: { q?: string; category?: string; page?: number }) {
+  function makeUrl(overrides: { q?: string; category?: string; page?: number; view?: string }) {
     const params = new URLSearchParams(searchParams);
     if (overrides.q !== undefined) {
       if (overrides.q) params.set("q", overrides.q);
@@ -187,6 +188,10 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
     if (overrides.page !== undefined) {
       if (overrides.page > 1) params.set("page", String(overrides.page));
       else params.delete("page");
+    }
+    if (overrides.view !== undefined) {
+      if (overrides.view === "list") params.set("view", "list");
+      else params.delete("view");
     }
     const queryStr = params.toString();
     return queryStr ? `?${queryStr}` : "";
@@ -214,6 +219,9 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
           <Form method="get" className="studio-search-bar" role="search">
             {currentCategory !== "all" && (
               <input type="hidden" name="category" value={currentCategory} />
+            )}
+            {currentView === "list" && (
+              <input type="hidden" name="view" value="list" />
             )}
             <svg
               className="studio-search-icon"
@@ -253,28 +261,65 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
           </Form>
         </div>
 
-        {/* Category Filters */}
-        <div className="filters reveal d1" role="tablist" aria-label="Filter case studies by category">
-          {categories.map((cat) => {
-            const isActive =
-              (cat === "all" && currentCategory === "all") ||
-              currentCategory.toLowerCase() === cat.toLowerCase();
-            return (
-              <Link
-                key={cat}
-                to={makeUrl({ category: cat, page: 1 })}
-                className={isActive ? "is-active" : ""}
-                role="tab"
-                aria-selected={isActive}
-                style={{ textDecoration: "none" }}
-              >
-                {cat === "all" ? "All Disciplines" : cat}
-              </Link>
-            );
-          })}
+        {/* Controls Toolbar: Category Filters + View Mode Switch */}
+        <div className="case-toolbar reveal d1">
+          <div className="filters" role="tablist" aria-label="Filter case studies by category">
+            {categories.map((cat) => {
+              const isActive =
+                (cat === "all" && currentCategory === "all") ||
+                currentCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <Link
+                  key={cat}
+                  to={makeUrl({ category: cat, page: 1 })}
+                  className={isActive ? "is-active" : ""}
+                  role="tab"
+                  aria-selected={isActive}
+                  style={{ textDecoration: "none" }}
+                >
+                  {cat === "all" ? "All Disciplines" : cat}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="case-view-switch" role="group" aria-label="View layout switch">
+            <Link
+              to={makeUrl({ view: "grid" })}
+              className={`case-view-btn ${currentView === "grid" ? "is-active" : ""}`}
+              aria-label="Grid View"
+              title="Grid View"
+              preventScrollReset
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span>Grid</span>
+            </Link>
+            <Link
+              to={makeUrl({ view: "list" })}
+              className={`case-view-btn ${currentView === "list" ? "is-active" : ""}`}
+              aria-label="List View"
+              title="List View"
+              preventScrollReset
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              <span>List</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Case Studies Grid or Empty State */}
+        {/* Case Studies Grid or List or Empty State */}
         {items.length === 0 ? (
           <div className="case-empty-state reveal">
             <h2 className="case-empty-state__title">No Case Studies Found</h2>
@@ -297,6 +342,81 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                 />
               </svg>
             </Link>
+          </div>
+        ) : currentView === "list" ? (
+          <div className="case-list">
+            {items.map((item, index) => {
+              const delays = ["", "d1", "d2"];
+              const delayClass = delays[index % 3] || "";
+              const topResult = item.results && item.results.length > 0 ? item.results[0] : null;
+
+              return (
+                <Link
+                  key={item.id}
+                  to={`/case-study/${item.slug}`}
+                  className={`case-list-item reveal ${delayClass}`}
+                  viewTransition
+                >
+                  <div className="case-list-item__logo-col">
+                    {item.clientLogo && (
+                      <div className="case-list-item__logo" title={`${item.client} logo`}>
+                        <img src={item.clientLogo} alt={`${item.client} logo`} loading="lazy" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="case-list-item__visual">
+                    <img
+                      src={item.heroImage}
+                      alt={`${item.client} showcase`}
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="case-list-item__content">
+                    <div className="case-list-item__meta">
+                      <span className="case-list-item__category">{item.category}</span>
+                      <span className="case-list-item__dot">•</span>
+                      <span className="case-list-item__year">{item.year}</span>
+                    </div>
+                    <h2 className="case-list-item__client">{item.client}</h2>
+                    <h3 className="case-list-item__title">{item.title}</h3>
+                    <p className="case-list-item__tagline">{item.tagline}</p>
+                  </div>
+
+                  <div className="case-list-item__extra">
+                    {topResult && (
+                      <span className="case-card__result-badge">
+                        {topResult.value} — {topResult.label}
+                      </span>
+                    )}
+                    {item.deliverables && item.deliverables.length > 0 && (
+                      <div className="case-list-item__deliverables">
+                        {item.deliverables.slice(0, 2).map((d) => (
+                          <span key={d} className="case-card__deliverable-tag">
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="case-list-item__action" aria-hidden="true">
+                    <span className="case-list-item__arrow">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M7 17L17 7M17 7H8M17 7V16"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="case-grid">
