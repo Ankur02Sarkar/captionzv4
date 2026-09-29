@@ -21,6 +21,85 @@ export default function Home() {
   const [isStatementOpen, setIsStatementOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isStatementOpenRef = useRef(false);
+  const isMenuOpenRef = useRef(isMenuOpen);
+  const lastClosedViaClickRef = useRef<number>(0);
+
+  useEffect(() => {
+    isMenuOpenRef.current = isMenuOpen;
+    if (isMenuOpen) {
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+      isStatementOpenRef.current = false;
+      setIsStatementOpen(false);
+    }
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleMouseMove = () => {
+      if (isMenuOpenRef.current) return;
+      if (Date.now() - lastClosedViaClickRef.current < 600) return;
+
+      if (!isStatementOpenRef.current) {
+        isStatementOpenRef.current = true;
+        setIsStatementOpen(true);
+      }
+
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+
+      idleTimerRef.current = setTimeout(() => {
+        isStatementOpenRef.current = false;
+        setIsStatementOpen(false);
+      }, 5000);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (idleTimerRef.current) {
+          clearTimeout(idleTimerRef.current);
+        }
+        isStatementOpenRef.current = false;
+        setIsStatementOpen(false);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleToggleStatement = () => {
+    setIsStatementOpen((prev) => {
+      const next = !prev;
+      isStatementOpenRef.current = next;
+
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+
+      if (next) {
+        idleTimerRef.current = setTimeout(() => {
+          isStatementOpenRef.current = false;
+          setIsStatementOpen(false);
+        }, 5000);
+      } else {
+        lastClosedViaClickRef.current = Date.now();
+      }
+
+      return next;
+    });
+  };
 
   useEffect(() => {
     const video = videoRef.current;
@@ -89,7 +168,7 @@ export default function Home() {
               type="button"
               aria-expanded={isStatementOpen}
               aria-describedby="stepReveal"
-              onClick={() => setIsStatementOpen((prev) => !prev)}
+              onClick={handleToggleStatement}
             >
               Step into the <em>gateway</em> of branding — Captionz
             </button>
