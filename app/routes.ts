@@ -4,6 +4,7 @@ export default [
   // Primary application routes
   index("routes/home.tsx"),
   route("case-study", "routes/case-study.tsx"),
+  route("case-study/:slug", "routes/case-study-detail.tsx"),
   route("works", "routes/works.tsx"),
   route("about", "routes/about.tsx"),
   route("contact", "routes/contact.tsx"),

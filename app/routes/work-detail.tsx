@@ -3,9 +3,22 @@ import type { Route } from "./+types/work-detail";
 import { ShellLayout } from "../components/Layout/ShellLayout";
 import { Footline } from "../components/Common/Footline";
 import { HiResImage } from "../components/Common/HiResImage";
-import { worksBySlug } from "../data/worksData";
+import { getDatabase } from "../db/getDb";
+import { works } from "../db/schema";
+import { eq } from "drizzle-orm";
+import { worksBySlug, type WorkItem } from "../data/worksData";
 
-export function loader({ params }: Route.LoaderArgs) {
+function safeParseJson<T>(raw: any, fallback: T): T {
+  if (!raw) return fallback;
+  if (typeof raw === "object") return raw as T;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function loader({ params, context }: Route.LoaderArgs) {
   let slug = params.slug;
   if (!slug) {
     throw new Response("Project Not Found", { status: 404 });
@@ -16,7 +29,54 @@ export function loader({ params }: Route.LoaderArgs) {
     slug = slug.replace(/\.html$/, "");
   }
 
-  const work = worksBySlug.get(slug);
+  const db = getDatabase(context);
+  let work: WorkItem | null = null;
+
+  if (db) {
+    try {
+      const rows = await db
+        .select()
+        .from(works)
+        .where(eq(works.slug, slug))
+        .limit(1);
+
+      if (rows.length > 0) {
+        const r = rows[0];
+        work = {
+          slug: r.slug,
+          num: r.num,
+          name: r.name,
+          title: r.title,
+          metaDescription: r.metaDescription,
+          sector: r.sector,
+          eyebrow: r.eyebrow,
+          category: r.category as any,
+          tag: r.tag,
+          isPhoto: r.isPhoto,
+          thumb: r.thumb,
+          tint: r.tint,
+          intro: r.intro,
+          isCaseStudy: r.isCaseStudy,
+          brandLogo: r.brandLogo,
+          coverImage: safeParseJson(r.coverImage, null),
+          quote: safeParseJson(r.quote, null),
+          notes: safeParseJson(r.notes, []),
+          colorPillars: safeParseJson(r.colorPillars, null),
+          ledeParagraphs: safeParseJson(r.ledeParagraphs, []),
+          gallery: safeParseJson(r.gallery, []),
+          nextLink: safeParseJson(r.nextLink, null),
+          backLink: safeParseJson(r.backLink, { href: "/works", label: "Back to Works" }),
+        };
+      }
+    } catch (err) {
+      console.error("D1 query error in work-detail loader:", err);
+    }
+  }
+
+  if (!work) {
+    work = worksBySlug.get(slug) || null;
+  }
+
   if (!work) {
     throw new Response("Project Not Found", { status: 404 });
   }
