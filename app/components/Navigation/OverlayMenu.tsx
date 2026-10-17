@@ -81,7 +81,6 @@ export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
               ref={index === 0 ? firstLinkRef : undefined}
               className={`overlay-menu__row ${active ? "is-current" : ""}`}
               onClick={onClose}
-              viewTransition
               aria-current={active ? "page" : undefined}
             >
               <span className="overlay-menu__num">{item.num}</span>

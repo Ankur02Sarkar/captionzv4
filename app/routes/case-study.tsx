@@ -2,8 +2,10 @@ import { Link, useSearchParams, Form } from "react-router";
 import type { Route } from "./+types/case-study";
 import { ShellLayout } from "../components/Layout/ShellLayout";
 import { Footline } from "../components/Common/Footline";
+import { BrandPlate, BrandMonogram } from "../components/Common/BrandPlate";
+import { Reveal } from "../components/Motion/Reveal";
 import { getDatabase } from "../db/getDb";
-import { caseStudies, type CaseStudy as DbCaseStudy } from "../db/schema";
+import { caseStudies } from "../db/schema";
 import { eq, or, like, and, count, desc } from "drizzle-orm";
 
 export function meta({}: Route.MetaArgs) {
@@ -28,7 +30,7 @@ interface ParsedCaseStudy {
   tagline: string;
   heroImage: string;
   clientLogo?: string | null;
-  galleryImages: string[];
+  galleryImages: Array<string | { src: string; caption?: string }>;
   overview: string;
   challenge: string;
   strategy: string;
@@ -59,7 +61,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   const db = getDatabase(context);
 
-  const allCategories = [
+  // The filter row is derived from what is actually published, so a new
+  // discipline shows up the moment its first case study goes live.
+  const fallbackCategories = [
     "all",
     "Branding",
     "Social Media",
@@ -71,6 +75,18 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   if (db) {
     try {
+      const categoryRows = await db
+        .selectDistinct({ category: caseStudies.category })
+        .from(caseStudies)
+        .where(eq(caseStudies.published, true));
+
+      const published = categoryRows
+        .map((row) => row.category)
+        .filter((value): value is string => Boolean(value))
+        .sort((a, b) => a.localeCompare(b));
+
+      const allCategories = published.length > 0 ? ["all", ...published] : fallbackCategories;
+
       const conditions: any[] = [eq(caseStudies.published, true)];
 
       if (category !== "all") {
@@ -119,7 +135,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         tagline: r.tagline,
         heroImage: r.heroImage,
         clientLogo: r.clientLogo,
-        galleryImages: safeParseJson<string[]>(r.galleryImages, []),
+        galleryImages: safeParseJson<Array<string | { src: string; caption?: string }>>(
+          r.galleryImages,
+          []
+        ),
         overview: r.overview,
         challenge: r.challenge,
         strategy: r.strategy,
@@ -148,15 +167,27 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   }
 
   return {
-    items: [],
+    items: [] as ParsedCaseStudy[],
     totalCount: 0,
     totalPages: 1,
     currentPage: page,
     currentCategory: category,
     currentQuery: q,
-    categories: allCategories,
+    categories: fallbackCategories,
   };
 }
+
+const ARROW = (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M7 17L17 7M17 7H8M17 7V16"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
   const {
@@ -197,32 +228,35 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
     return queryStr ? `?${queryStr}` : "";
   }
 
+  const pageOffset = (currentPage - 1) * 6;
+
   return (
     <ShellLayout activeSection="case-study">
       <main className="main">
-        <div className="content-head reveal">
-          <p className="eyebrow">Strategy. Identity. Architecture.</p>
-          <h1 className="h-hero">
-            Case
-            <br />
-            Studies
-            <span className="rule" aria-hidden="true"></span>
-          </h1>
-          <p className="lede">
-            Real brands. Real friction. The architectural systems and campaigns
-            that moved them from commodity to high-tension industry leaders.
-          </p>
+        <div className="content-head">
+          <Reveal as="p" className="eyebrow" variant="fade">
+            Strategy. Identity. Architecture.
+          </Reveal>
+          <Reveal variant="mask">
+            <h1 className="h-hero">
+              Case
+              <br />
+              Studies
+              <span className="rule" aria-hidden="true" />
+            </h1>
+          </Reveal>
+          <Reveal as="p" className="lede" variant="up" delay={0.08}>
+            Real brands. Real friction. The architectural systems and campaigns that moved them from
+            commodity to high-tension industry leaders.
+          </Reveal>
         </div>
 
-        {/* Search Bar */}
-        <div className="reveal d1">
+        <div className="index-bar">
           <Form method="get" className="studio-search-bar" role="search">
             {currentCategory !== "all" && (
               <input type="hidden" name="category" value={currentCategory} />
             )}
-            {currentView === "list" && (
-              <input type="hidden" name="view" value="list" />
-            )}
+            {currentView === "list" && <input type="hidden" name="view" value="list" />}
             <svg
               className="studio-search-icon"
               width="16"
@@ -233,6 +267,7 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -241,7 +276,7 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
               type="search"
               name="q"
               defaultValue={currentQuery}
-              placeholder="Search case studies by client, industry, keywords..."
+              placeholder="Search by client, industry, keyword…"
               className="studio-search-input"
               aria-label="Search case studies"
             />
@@ -252,17 +287,14 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                 title="Clear search"
                 aria-label="Clear search"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
+                  <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </Link>
             )}
           </Form>
-        </div>
 
-        {/* Controls Toolbar: Category Filters + View Mode Switch */}
-        <div className="case-toolbar reveal d1">
           <div className="filters" role="tablist" aria-label="Filter case studies by category">
             {categories.map((cat) => {
               const isActive =
@@ -275,7 +307,6 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                   className={isActive ? "is-active" : ""}
                   role="tab"
                   aria-selected={isActive}
-                  style={{ textDecoration: "none" }}
                 >
                   {cat === "all" ? "All Disciplines" : cat}
                 </Link>
@@ -287,11 +318,11 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
             <Link
               to={makeUrl({ view: "grid" })}
               className={`case-view-btn ${currentView === "grid" ? "is-active" : ""}`}
-              aria-label="Grid View"
-              title="Grid View"
+              aria-label="Grid view"
+              title="Grid view"
               preventScrollReset
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="3" y="3" width="7" height="7" />
                 <rect x="14" y="3" width="7" height="7" />
                 <rect x="14" y="14" width="7" height="7" />
@@ -302,11 +333,11 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
             <Link
               to={makeUrl({ view: "list" })}
               className={`case-view-btn ${currentView === "list" ? "is-active" : ""}`}
-              aria-label="List View"
-              title="List View"
+              aria-label="List view"
+              title="List view"
               preventScrollReset
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <line x1="8" y1="6" x2="21" y2="6" />
                 <line x1="8" y1="12" x2="21" y2="12" />
                 <line x1="8" y1="18" x2="21" y2="18" />
@@ -319,197 +350,130 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
 
-        {/* Case Studies Grid or List or Empty State */}
         {items.length === 0 ? (
-          <div className="case-empty-state reveal">
+          <div className="case-empty-state">
             <h2 className="case-empty-state__title">No Case Studies Found</h2>
             <p className="case-empty-state__text">
-              No project matched your filter "{currentCategory}" {currentQuery ? `and query "${currentQuery}"` : ""}.
+              Nothing matched {currentQuery ? `“${currentQuery}”` : "this filter"}
+              {currentCategory !== "all" ? ` in ${currentCategory}` : ""}.
             </p>
-            <Link
-              to="/case-study"
-              className="link-arrow"
-              style={{ display: "inline-flex" }}
-            >
-              Reset Filters
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M7 17L17 7M17 7H8M17 7V16"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <Link to="/case-study" className="link-arrow">
+              Reset filters
+              {ARROW}
             </Link>
           </div>
         ) : currentView === "list" ? (
-          <div className="case-list">
-            {items.map((item, index) => {
-              const delays = ["", "d1", "d2"];
-              const delayClass = delays[index % 3] || "";
-              const topResult = item.results && item.results.length > 0 ? item.results[0] : null;
+          <div className="cs-list">
+            {items.map((item, index) => (
+              <Reveal key={item.id} as="div" variant="up" delay={Math.min(index, 3) * 0.05}>
+                <Link to={`/case-study/${item.slug}`} className="cs-row">
+                  <span className="cs-row__num">{String(pageOffset + index + 1).padStart(2, "0")}</span>
 
-              return (
-                <Link
-                  key={item.id}
-                  to={`/case-study/${item.slug}`}
-                  className={`case-list-item reveal ${delayClass}`}
-                  viewTransition
-                >
-                  <div className="case-list-item__logo-col">
-                    {item.clientLogo && (
-                      <div className="case-list-item__logo" title={`${item.client} logo`}>
-                        <img src={item.clientLogo} alt={`${item.client} logo`} loading="lazy" />
-                      </div>
+                  <span className="cs-row__media">
+                    {item.heroImage ? (
+                      <img src={item.heroImage} alt="" loading="lazy" />
+                    ) : (
+                      <BrandPlate
+                        client={item.client}
+                        category={item.category}
+                        index={pageOffset + index + 1}
+                      />
                     )}
-                  </div>
+                  </span>
 
-                  <div className="case-list-item__visual">
-                    <img
-                      src={item.heroImage}
-                      alt={`${item.client} showcase`}
-                      loading="lazy"
-                    />
-                  </div>
+                  <span className="cs-row__body">
+                    <span className="cs-row__eyebrow">{item.category}</span>
+                    <span className="cs-row__client">{item.client}</span>
+                    <span className="cs-row__title">{item.title}</span>
+                  </span>
 
-                  <div className="case-list-item__content">
-                    <div className="case-list-item__meta">
-                      <span className="case-list-item__category">{item.category}</span>
-                      <span className="case-list-item__dot">•</span>
-                      <span className="case-list-item__year">{item.year}</span>
-                    </div>
-                    <h2 className="case-list-item__client">{item.client}</h2>
-                    <h3 className="case-list-item__title">{item.title}</h3>
-                    <p className="case-list-item__tagline">{item.tagline}</p>
-                  </div>
+                  <span className="cs-row__extra">
+                    <span>{item.industry}</span>
+                    <span>{item.year}</span>
+                  </span>
 
-                  <div className="case-list-item__extra">
-                    {topResult && (
-                      <span className="case-card__result-badge">
-                        {topResult.value} — {topResult.label}
-                      </span>
-                    )}
-                    {item.deliverables && item.deliverables.length > 0 && (
-                      <div className="case-list-item__deliverables">
-                        {item.deliverables.slice(0, 2).map((d) => (
-                          <span key={d} className="case-card__deliverable-tag">
-                            {d}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="case-list-item__action" aria-hidden="true">
-                    <span className="case-list-item__arrow">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M7 17L17 7M17 7H8M17 7V16"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  </div>
+                  <span className="cs-row__arrow" aria-hidden="true">
+                    {ARROW}
+                  </span>
                 </Link>
-              );
-            })}
+              </Reveal>
+            ))}
           </div>
         ) : (
-          <div className="case-grid">
+          <div className="cs-index">
             {items.map((item, index) => {
-              const delays = ["", "d1", "d2"];
-              const delayClass = delays[index % 3] || "";
-              const topResult = item.results && item.results.length > 0 ? item.results[0] : null;
+              const topResult = item.results?.[0];
+              const number = String(pageOffset + index + 1).padStart(2, "0");
 
               return (
-                <Link
-                  key={item.id}
-                  to={`/case-study/${item.slug}`}
-                  className={`case-card reveal ${delayClass}`}
-                  viewTransition
-                >
-                  <div className="case-card__plate">
-                    <img
-                      src={item.heroImage}
-                      alt={`${item.client} — ${item.title}`}
-                      className="case-card__hero-img"
-                      loading="lazy"
-                    />
-                    {item.clientLogo && (
-                      <div className="case-card__logo-badge" title={`${item.client} logo`}>
+                <Reveal key={item.id} variant="up" delay={Math.min(index, 3) * 0.06}>
+                  <Link
+                    to={`/case-study/${item.slug}`}
+                    className="cs-card"
+                    data-cursor="view"
+                    data-cursor-label="View"
+                  >
+                    <span className="cs-card__media">
+                      {item.heroImage ? (
                         <img
-                          src={item.clientLogo}
-                          alt={`${item.client} logo`}
+                          className="cs-card__img"
+                          src={item.heroImage}
+                          alt={`${item.client} — ${item.title}`}
                           loading="lazy"
                         />
-                      </div>
-                    )}
-                  </div>
-                  <div className="case-card__body">
-                    <div className="case-card__meta-bar">
-                      <span className="case-card__category">{item.category}</span>
-                      <span className="case-card__year">{item.year}</span>
-                    </div>
-
-                    <h2 className="case-card__name">{item.client}</h2>
-                    <h3 className="case-card__title">{item.title}</h3>
-                    <p className="case-card__line">{item.tagline}</p>
-
-                    {topResult && (
-                      <div className="case-card__results-preview">
-                        <span className="case-card__result-badge">
-                          {topResult.value} — {topResult.label}
-                        </span>
-                      </div>
-                    )}
-
-                    {item.deliverables && item.deliverables.length > 0 && (
-                      <div className="case-card__deliverables">
-                        {item.deliverables.slice(0, 3).map((d) => (
-                          <span key={d} className="case-card__deliverable-tag">
-                            {d}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <span className="link-arrow" style={{ alignSelf: "flex-start", marginTop: "12px" }}>
-                      View Case Study
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M7 17L17 7M17 7H8M17 7V16"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                      ) : (
+                        <BrandPlate
+                          client={item.client}
+                          category={item.category}
+                          industry={item.industry}
+                          year={item.year}
+                          index={pageOffset + index + 1}
                         />
-                      </svg>
+                      )}
+
+                      {item.clientLogo && (
+                        <span className="cs-card__badge">
+                          <img src={item.clientLogo} alt={`${item.client} logo`} loading="lazy" />
+                        </span>
+                      )}
                     </span>
-                  </div>
-                </Link>
+
+                    <span className="cs-card__body">
+                      <span className="cs-card__num">
+                        {number} · {item.year}
+                      </span>
+                      <span className="cs-card__client">{item.client}</span>
+                      <span className="cs-card__rule" aria-hidden="true" />
+                      <span className="cs-card__title">{item.title}</span>
+                      <span className="cs-card__line">{item.tagline}</span>
+
+                      <span className="cs-card__foot">
+                        <span className="cs-card__meta">
+                          <span>{item.category}</span>
+                          {topResult && <span>{topResult.value}</span>}
+                        </span>
+                        <span className="cs-card__arrow" aria-hidden="true">
+                          {ARROW}
+                        </span>
+                      </span>
+                    </span>
+                  </Link>
+                </Reveal>
               );
             })}
           </div>
         )}
 
-        {/* Architectural Pagination */}
         {totalPages > 1 && (
-          <div className="studio-pagination reveal">
+          <div className="studio-pagination">
             <span className="studio-pagination__info">
-              Showing {(currentPage - 1) * 6 + 1}–{Math.min(currentPage * 6, totalCount)} of {totalCount} Case Studies
+              Showing {pageOffset + 1}–{Math.min(currentPage * 6, totalCount)} of {totalCount} Case
+              Studies
             </span>
             <div className="studio-pagination__controls">
               {currentPage > 1 ? (
-                <Link
-                  to={makeUrl({ page: currentPage - 1 })}
-                  className="studio-pagination__btn"
-                  viewTransition
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <Link to={makeUrl({ page: currentPage - 1 })} className="studio-pagination__btn">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                   </svg>
                   Previous
@@ -525,20 +489,15 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
                   key={pageNum}
                   to={makeUrl({ page: pageNum })}
                   className={`studio-pagination__btn ${pageNum === currentPage ? "is-active" : ""}`}
-                  viewTransition
                 >
                   {pageNum}
                 </Link>
               ))}
 
               {currentPage < totalPages ? (
-                <Link
-                  to={makeUrl({ page: currentPage + 1 })}
-                  className="studio-pagination__btn"
-                  viewTransition
-                >
+                <Link to={makeUrl({ page: currentPage + 1 })} className="studio-pagination__btn">
                   Next
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </Link>

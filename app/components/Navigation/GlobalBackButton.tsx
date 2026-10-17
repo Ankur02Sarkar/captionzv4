@@ -23,7 +23,7 @@ export function GlobalBackButton() {
     return () => window.removeEventListener("popstate", updateCanGoBack);
   }, [location]);
 
-  if (!canGoBack) {
+  if (!canGoBack || location.pathname === "/") {
     return null;
   }
 

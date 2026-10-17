@@ -19,7 +19,7 @@ export function Footline({
       <span>&copy; <span>{currentYear}</span> Captionz. All rights reserved.</span>
       <div className="footline__links">
         {links.map((link) => (
-          <Link key={link.href} to={link.href} viewTransition>
+          <Link key={link.href} to={link.href}>
             {link.label}
           </Link>
         ))}

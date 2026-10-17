@@ -10,25 +10,21 @@ export function Topbar({ variant = "default", onToggleMenu, isOpen = false }: To
   return (
     <header className="topbar">
       {variant === "home" ? (
-        <Link to="/" className="home-logo-block reveal d1" aria-label="Captionz home" viewTransition>
+        <Link to="/" className="home-logo-block" aria-label="Captionz home" data-no-gate>
           <span className="home-word">
-            C<img src="/assets/gateway-icon.png" alt="" />PTIONZ
+            C<img src="/assets/gateway-icon.png" alt="" />
+            PTIONZ
           </span>
           <span className="home-tag">Gateway of Branding</span>
         </Link>
       ) : (
-        <Link
-          to="/"
-          className="topbar__mark is-dark"
-          aria-label="Captionz home"
-          viewTransition
-        >
-          <img src="/assets/gateway-icon.png" alt="Captionz" style={{ width: "100%" }} />
+        <Link to="/" className="topbar__mark" aria-label="Captionz home">
+          <img src="/assets/gateway-icon.png" alt="" />
         </Link>
       )}
 
       <button
-        className={`menu-toggle is-dark`}
+        className={`menu-toggle ${variant === "home" ? "is-light" : "is-dark"}`}
         onClick={onToggleMenu}
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-haspopup="true"

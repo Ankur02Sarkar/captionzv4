@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Topbar } from "../Navigation/Topbar";
 import { OverlayMenu } from "../Navigation/OverlayMenu";
 import { Rail } from "../Navigation/Rail";
-import { GatewayVeil } from "../Common/GatewayVeil";
+import { MobileNav } from "../Navigation/MobileNav";
 
 interface ShellLayoutProps {
   children: React.ReactNode;
@@ -21,20 +21,22 @@ export function ShellLayout({
 
   return (
     <>
-      <GatewayVeil />
+      <a className="skip-link" href="#content">
+        Skip to content
+      </a>
       <Topbar
         variant={topbarVariant}
         isOpen={isMenuOpen}
         onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
       />
-      <OverlayMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-      />
+      <OverlayMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <div className="shell">
         <Rail mode={railMode} activeSection={activeSection} />
-        <div className="room">{children}</div>
+        <div className="room" id="content">
+          {children}
+        </div>
       </div>
+      <MobileNav activeSection={activeSection} />
     </>
   );
 }

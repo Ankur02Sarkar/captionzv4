@@ -25,10 +25,10 @@ export function Rail({ mode = "standard", activeSection = "case-study" }: RailPr
 
   return (
     <aside className="rail">
-      <Link to="/" className="rail__mark" aria-label="Captionz home" viewTransition>
+      <Link to="/" className="rail__mark" aria-label="Captionz home">
         <img src="/assets/gateway-icon.png" alt="" />
       </Link>
-      <div className="rail__nav">
+      <nav className="rail__nav" aria-label="Sections">
         {items.map((item) => {
           const isActive = item.id === activeSection;
           return (
@@ -36,16 +36,17 @@ export function Rail({ mode = "standard", activeSection = "case-study" }: RailPr
               key={item.id}
               to={item.href}
               className={`rail__item ${isActive ? "is-active" : ""}`}
-              viewTransition
+              aria-current={isActive ? "page" : undefined}
             >
               <span className="rail__num">{item.num}</span>
               <span className="rail__label">{item.label}</span>
+              <span className="rail__rule" aria-hidden="true" />
             </Link>
           );
         })}
-      </div>
-      <Link to="/contact" className="rail__foot" viewTransition>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+      </nav>
+      <Link to="/contact" className="rail__foot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M5 19L19 5M19 5H8M19 5V16"
             stroke="currentColor"

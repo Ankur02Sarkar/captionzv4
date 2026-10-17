@@ -6,9 +6,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { useEffect } from "react";
 import type { Route } from "./+types/root";
 import { GlobalBackButton } from "./components/Navigation/GlobalBackButton";
+import { CursorLayer } from "./components/Motion/CursorLayer";
+import { GateTransition } from "./components/Motion/GateTransition";
+import { IntroCurtain } from "./components/Motion/IntroCurtain";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -26,10 +28,6 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    document.documentElement.classList.add("js-ready");
-  }, []);
-
   return (
     <html lang="en" className="js-ready">
       <head>
@@ -49,10 +47,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <>
+    <GateTransition>
+      <CursorLayer />
+      <IntroCurtain />
       <Outlet />
       <GlobalBackButton />
-    </>
+    </GateTransition>
   );
 }
 
@@ -74,13 +74,36 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="shell">
-      <div className="room" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        className="room"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <div style={{ maxWidth: "600px", padding: "40px", textAlign: "center" }}>
-          <h1 className="h-hero" style={{ fontSize: "64px", marginBottom: "20px" }}>{message}</h1>
-          <p className="lede" style={{ margin: "0 auto 30px" }}>{details}</p>
-          <a href="/" className="btn">Return to Gateway</a>
+          <h1 className="h-hero" style={{ fontSize: "64px", marginBottom: "20px" }}>
+            {message}
+          </h1>
+          <p className="lede" style={{ margin: "0 auto 30px" }}>
+            {details}
+          </p>
+          <a href="/" className="btn">
+            Return to Gateway
+          </a>
           {stack && (
-            <pre style={{ marginTop: "30px", padding: "16px", background: "rgba(0,0,0,0.05)", textAlign: "left", overflowX: "auto", fontSize: "12px" }}>
+            <pre
+              style={{
+                marginTop: "30px",
+                padding: "16px",
+                background: "rgba(0,0,0,0.05)",
+                textAlign: "left",
+                overflowX: "auto",
+                fontSize: "12px",
+              }}
+            >
               <code>{stack}</code>
             </pre>
           )}

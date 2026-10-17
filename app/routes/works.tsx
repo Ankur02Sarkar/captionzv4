@@ -272,7 +272,6 @@ export default function Works({ loaderData }: Route.ComponentProps) {
                 className="work-row"
                 data-category={work.category}
                 style={work.tint ? ({ "--tint": work.tint } as React.CSSProperties) : undefined}
-                viewTransition
               >
                 <span className="work-row__num">{work.num}</span>
                 <span
@@ -324,7 +323,6 @@ export default function Works({ loaderData }: Route.ComponentProps) {
                 <Link
                   to={makeUrl({ page: currentPage - 1 })}
                   className="studio-pagination__btn"
-                  viewTransition
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -342,7 +340,6 @@ export default function Works({ loaderData }: Route.ComponentProps) {
                   key={pageNum}
                   to={makeUrl({ page: pageNum })}
                   className={`studio-pagination__btn ${pageNum === currentPage ? "is-active" : ""}`}
-                  viewTransition
                 >
                   {pageNum}
                 </Link>
@@ -352,7 +349,6 @@ export default function Works({ loaderData }: Route.ComponentProps) {
                 <Link
                   to={makeUrl({ page: currentPage + 1 })}
                   className="studio-pagination__btn"
-                  viewTransition
                 >
                   Next
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

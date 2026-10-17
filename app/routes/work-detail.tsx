@@ -104,10 +104,9 @@ export default function WorkDetail({ loaderData }: Route.ComponentProps) {
     >
       <main className="main">
         <Link
-          className="link-arrow"
+          className="cs-back"
           to={work.backLink.href}
-          style={{ marginTop: "clamp(96px, 12vw, 148px)", border: "none" }}
-          viewTransition
+          style={{ marginTop: "clamp(96px, 12vw, 148px)" }}
         >
           <svg
             width="14"
@@ -128,25 +127,52 @@ export default function WorkDetail({ loaderData }: Route.ComponentProps) {
         </Link>
 
         <div className="cd-intro reveal d1">
-          {work.isCaseStudy && work.brandLogo ? (
-            <div className="cd-intro__brand">
-              <img src={work.brandLogo} alt={`${work.name} logo`} />
-            </div>
-          ) : work.eyebrow ? (
-            <p className="eyebrow">{work.eyebrow}</p>
-          ) : null}
+          <div className="cd-intro__id">
+            {work.isCaseStudy && work.brandLogo ? (
+              <div className="cd-intro__brand">
+                <img src={work.brandLogo} alt={`${work.name} logo`} />
+              </div>
+            ) : work.eyebrow ? (
+              <p className="eyebrow" style={{ marginBottom: 0 }}>
+                {work.eyebrow}
+              </p>
+            ) : null}
 
-          <h1 className="cd-intro__name">{work.name}</h1>
+            <h1 className="cd-intro__name">{work.name}</h1>
+          </div>
 
-          {work.ledeParagraphs.length > 0 && (
-            <div className="lede" style={{ marginTop: "16px" }}>
-              {work.ledeParagraphs.map((para, i) => (
-                <p key={i} style={i > 0 ? { marginTop: "14px" } : undefined}>
-                  {para}
-                </p>
-              ))}
+          <div className="cd-intro__body">
+            {work.ledeParagraphs.length > 0 && (
+              <div className="lede" style={{ marginTop: 0 }}>
+                {work.ledeParagraphs.map((para, i) => (
+                  <p key={i} style={i > 0 ? { marginTop: "14px" } : undefined}>
+                    {para}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            <div className="cd-intro__facts">
+              {work.sector && (
+                <span className="cs-meta">
+                  <span className="cs-meta__label">Sector</span>
+                  <span className="cs-meta__val">{work.sector}</span>
+                </span>
+              )}
+              {typeof work.category === "string" && work.category && (
+                <span className="cs-meta">
+                  <span className="cs-meta__label">Discipline</span>
+                  <span className="cs-meta__val">{work.category}</span>
+                </span>
+              )}
+              {work.tag && (
+                <span className="cs-meta">
+                  <span className="cs-meta__label">Format</span>
+                  <span className="cs-meta__val">{work.tag}</span>
+                </span>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {work.isCaseStudy && (
@@ -223,7 +249,7 @@ export default function WorkDetail({ loaderData }: Route.ComponentProps) {
         )}
 
         {work.nextLink && (
-          <Link className="cd-next reveal" to={work.nextLink.href} viewTransition>
+          <Link className="cd-next reveal" to={work.nextLink.href}>
             <div>
               <span className="cd-next__label">{work.nextLink.label}</span>
               <div className="cd-next__name">{work.nextLink.name}</div>

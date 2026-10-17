@@ -1,5 +1,6 @@
 import type { Route } from "./+types/about";
 import { ShellLayout } from "../components/Layout/ShellLayout";
+import { Reveal } from "../components/Motion/Reveal";
 import { Footline } from "../components/Common/Footline";
 
 export function meta({}: Route.MetaArgs) {
@@ -18,6 +19,29 @@ interface TeamMember {
   designation: string;
   image: string;
 }
+
+const EXPERTISE = [
+  {
+    name: "Brand Strategy",
+    desc: "Positioning, naming, architecture and the narrative that holds it together.",
+  },
+  {
+    name: "Identity & Design",
+    desc: "Marks, typography, colour systems and the rules that keep them alive.",
+  },
+  {
+    name: "Print & Packaging",
+    desc: "Brochures, dossiers, cartons and the craft of things you can hold.",
+  },
+  {
+    name: "Environmental",
+    desc: "Stalls, signage and spaces designed as experiences, not displays.",
+  },
+  {
+    name: "Campaigns & Digital",
+    desc: "Print, outdoor, festival and social campaigns built on one idea.",
+  },
+];
 
 const teamMembers: TeamMember[] = [
   {
@@ -87,13 +111,16 @@ export default function About() {
           </div>
         </section>
 
-        <section className="do reveal">
+        <section className="do">
           <span className="do__label">What We Do</span>
           <div className="do__list">
-            <div className="do__item">Creative Works</div>
-            <div className="do__item">Printing &amp; Packaging</div>
-            <div className="do__item">Event Planning</div>
-            <div className="do__item">Digital Marketing Content</div>
+            {EXPERTISE.map((item, idx) => (
+              <Reveal key={item.name} variant="up" delay={idx * 0.05} className="do__item">
+                <span className="do__num">{String(idx + 1).padStart(2, "0")}</span>
+                <span className="do__name">{item.name}</span>
+                <span className="do__desc">{item.desc}</span>
+              </Reveal>
+            ))}
           </div>
         </section>
 
@@ -113,26 +140,28 @@ export default function About() {
 
           <div className="about-team__grid">
             {teamMembers.map((member, idx) => (
-              <div
+              <Reveal
                 key={member.name}
-                className={`team-card reveal d${(idx % 4) + 1}`}
+                variant="up"
+                delay={Math.min(idx, 3) * 0.05}
+                className="team-card"
               >
                 <div className="team-card__visual">
-                  <span className="team-card__index">
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
+                  <span className="team-card__index">{String(idx + 1).padStart(2, "0")}</span>
                   <img
                     src={member.image}
                     alt={`${member.name} — ${member.designation}`}
                     loading="lazy"
                   />
-                  <div className="team-card__overlay" aria-hidden="true" />
+                  <div className="team-card__overlay" aria-hidden="true">
+                    <span className="team-card__name">{member.name}</span>
+                  </div>
                 </div>
                 <div className="team-card__content">
                   <span className="team-card__role">{member.designation}</span>
                   <h3 className="team-card__name">{member.name}</h3>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
