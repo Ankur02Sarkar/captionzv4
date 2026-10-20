@@ -1,8 +1,21 @@
-import { createElement, type ElementType, type ReactNode } from "react";
+import {
+  createContext,
+  createElement,
+  useContext,
+  type ElementType,
+  type ReactNode,
+} from "react";
 import { useInView } from "../../hooks/useInView";
 
 type RevealVariant = "up" | "mask" | "gate" | "fade" | "scale";
 type RevealAs = "div" | "section" | "article" | "li" | "span" | "figure" | "p";
+
+/**
+ * Render every descendant Reveal already in its final state, skipping the
+ * entrance animation. Used when a page is handed over from another layer
+ * (home veil → case studies) so the swap doesn't visibly restart.
+ */
+export const RevealImmediateContext = createContext(false);
 
 interface RevealProps {
   children?: ReactNode;
@@ -32,6 +45,7 @@ export function Reveal({
   style,
   ...rest
 }: RevealProps) {
+  const immediate = useContext(RevealImmediateContext);
   const { ref, inView } = useInView<HTMLElement>();
 
   return createElement(
@@ -40,7 +54,7 @@ export function Reveal({
       ref,
       className: className || undefined,
       "data-reveal": variant,
-      "data-visible": inView ? "" : undefined,
+      "data-visible": immediate || inView ? "" : undefined,
       style: delay ? { ...style, "--reveal-delay": `${delay}s` } : style,
       ...rest,
     },

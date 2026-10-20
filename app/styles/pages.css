@@ -1950,10 +1950,63 @@
   background: var(--ivory);
 }
 
+/* The home veil: a full-height plane that scrolls away to reveal the work. */
+.home-page {
+  --veil-h: 100svh;
+  position: relative;
+  overflow-x: clip;
+  background: var(--ivory);
+}
+
+.home-veil {
+  position: relative;
+  z-index: 2;
+  height: var(--veil-h);
+  overflow: hidden;
+  background: #e7e1d5;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* The gate lintel: a red edge riding the bottom of the veil. */
+.home-veil::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--red);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* The bar belongs to the veil, so it travels up with it — fixed would hang. */
+.home-veil .topbar {
+  position: absolute;
+}
+
+.home-peek {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: var(--veil-h);
+  margin-top: calc(var(--veil-h) * -1);
+  overflow: hidden;
+  transform: translateZ(0);
+  background: var(--ivory);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Scroll distance the reveal is allowed to consume before the hand-off. */
+.home-pull-room {
+  height: 110svh;
+}
+
 .home-hero {
   position: relative;
-  height: 100vh;
-  min-height: 600px;
+  height: 100%;
   overflow: hidden;
   background: #e7e1d5;
 }
@@ -2088,15 +2141,23 @@
   position: absolute;
   right: var(--gutter);
   bottom: clamp(56px, 9vw, 110px);
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 6px;
   font-family: var(--font-display);
   font-size: 10.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(251, 249, 245, 0.72);
+  color: rgba(251, 249, 245, 0.78);
+  transition: color 0.35s var(--ease);
+}
+
+.home-scrollcue:hover,
+.home-scrollcue:focus-visible {
+  color: #fff;
 }
 
 .home-scrollcue span {
@@ -2106,123 +2167,19 @@
 .home-scrollcue i {
   display: block;
   width: 1px;
-  height: 52px;
-  background: linear-gradient(180deg, rgba(251, 249, 245, 0.6), transparent);
+  height: 64px;
+  background: rgba(251, 249, 245, 0.24);
   position: relative;
   overflow: hidden;
 }
 
-.home-scrollcue i::after {
-  content: "";
+/* Filled by scroll progress — the doorway opening in miniature. */
+.home-scrollcue i b {
   position: absolute;
-  left: 0;
-  top: -52px;
-  width: 1px;
-  height: 52px;
+  inset: 0;
+  display: block;
   background: var(--red);
-  animation: cueDrop 2.4s var(--ease-soft) infinite;
-}
-
-@keyframes cueDrop {
-  0% {
-    top: -52px;
-  }
-  60%,
-  100% {
-    top: 52px;
-  }
-}
-
-.home-strip {
-  background: var(--ivory);
-  padding: var(--s7) var(--gutter) var(--s6);
-  border-top: 1px solid var(--line);
-}
-
-.home-strip__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: var(--s4);
-}
-
-.home-strip__title {
-  font-size: clamp(24px, 3vw, 38px);
-  line-height: 1.04;
-}
-
-.home-strip__note {
-  font-size: 13px;
-  color: var(--stone);
-  max-width: 42ch;
-}
-
-.home-strip__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-
-.home-strip__item {
-  position: relative;
-  background: var(--warm-white);
-  padding: 22px 20px 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow: hidden;
-}
-
-.home-strip__item::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background: var(--red);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.6s var(--ease);
-}
-
-.home-strip__item:hover::after {
-  transform: scaleX(1);
-}
-
-.home-strip__num {
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: var(--red);
-}
-
-.home-strip__name {
-  font-family: var(--font-display);
-  font-size: 19px;
-  text-transform: uppercase;
-  line-height: 1.1;
-}
-
-.home-strip__label {
-  font-size: 12.5px;
-  color: var(--stone);
-}
-
-.home-strip__arrow {
-  margin-top: auto;
-  padding-top: 14px;
-  color: var(--red);
-  display: inline-flex;
-  transition: transform 0.4s var(--ease);
-}
-
-.home-strip__item:hover .home-strip__arrow {
-  transform: translate(4px, -4px);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.12s linear;
 }

@@ -1,10 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/home";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Topbar } from "../components/Navigation/Topbar";
 import { OverlayMenu } from "../components/Navigation/OverlayMenu";
-import { Footline } from "../components/Common/Footline";
-import { Reveal } from "../components/Motion/Reveal";
+import { ShellLayout } from "../components/Layout/ShellLayout";
+import { CaseStudyIndex } from "../components/CaseStudy/CaseStudyIndex";
+import { RevealImmediateContext } from "../components/Motion/Reveal";
+import { getDatabase } from "../db/getDb";
+import { emptyCaseStudyIndex, getCaseStudyIndex } from "../lib/case-studies";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -17,41 +21,45 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-const GATEWAYS = [
-  {
-    num: "02",
-    name: "Case Studies",
-    label: "Nine brands, the friction they faced and the systems that moved them.",
-    href: "/case-study",
-  },
-  {
-    num: "03",
-    name: "Works Archive",
-    label: "Identity, print, packaging and environmental design across a decade.",
-    href: "/works",
-  },
-  {
-    num: "04",
-    name: "The Studio",
-    label: "Who we are, how we think, and the disciplines we build with.",
-    href: "/about",
-  },
-  {
-    num: "05",
-    name: "Start a Project",
-    label: "Tell us where the brand stands. We'll show you the next threshold.",
-    href: "/contact",
-  },
-];
+export async function loader({ context }: Route.LoaderArgs) {
+  const db = getDatabase(context);
+  if (!db) return { preview: emptyCaseStudyIndex() };
+  return { preview: await getCaseStudyIndex(db, { page: 1, category: "all", q: "" }) };
+}
 
-export default function Home() {
+/** Fraction of the veil that must be lifted before the hand-off completes. */
+const HANDOFF_AT = 0.8;
+const HANDOFF_MS = 470;
+
+const noUrls = () => "#";
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+  const { preview } = loaderData;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isStatementOpen, setIsStatementOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
+  const cueFillRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handoffTimerRef = useRef<number | null>(null);
+  const latchedRef = useRef(false);
   const isStatementOpenRef = useRef(false);
   const isMenuOpenRef = useRef(isMenuOpen);
+
+  const navigate = useNavigate();
+  const reduced = useReducedMotion();
+
+  // A fresh visit always starts with the veil down. Without this, going back
+  // from /case-study would restore a mid-reveal scroll position and instantly
+  // fire the hand-off again.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const frame = window.requestAnimationFrame(() => window.scrollTo(0, 0));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     isMenuOpenRef.current = isMenuOpen;
@@ -105,8 +113,77 @@ export default function Home() {
     };
   }, []);
 
+  /**
+   * The veil is lifted by real scroll. Once 80% of the case-study page is
+   * standing, the last fifth is finished on a short transition, the document
+   * is returned to the top (invisible — the viewport is already all peek) and
+   * the route is swapped for the real /case-study page.
+   */
+  useEffect(() => {
+    if (reduced) return;
+
+    const veil = veilRef.current;
+    if (!veil) return;
+
+    let frame = 0;
+
+    const finish = (progress: number) => {
+      if (latchedRef.current) return;
+      latchedRef.current = true;
+
+      const remaining = Math.max(0, 1 - progress);
+
+      if (remaining > 0.002) {
+        veil.style.transition = "transform 420ms cubic-bezier(0.65, 0, 0.2, 1)";
+        veil.style.transform = `translate3d(0, ${-remaining * 100}%, 0)`;
+      }
+
+      handoffTimerRef.current = window.setTimeout(
+        () => {
+          veil.style.transition = "none";
+          veil.style.transform = "translate3d(0, -100%, 0)";
+          window.scrollTo(0, 0);
+          navigate("/case-study", { state: { seamless: true } });
+        },
+        remaining > 0.002 ? HANDOFF_MS : 40
+      );
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (latchedRef.current || isMenuOpenRef.current) return;
+
+        const height = veil.offsetHeight || window.innerHeight;
+        const progress = Math.min(1, Math.max(0, window.scrollY / height));
+
+        if (cueFillRef.current) {
+          cueFillRef.current.style.transform = `scaleY(${progress})`;
+        }
+
+        if (progress >= HANDOFF_AT) finish(progress);
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+      if (handoffTimerRef.current) {
+        window.clearTimeout(handoffTimerRef.current);
+        handoffTimerRef.current = null;
+      }
+    };
+  }, [navigate, reduced]);
+
   const handlePageClick = (e: React.MouseEvent) => {
     if (isMenuOpen) return;
+    // Once the veil is moving, a click belongs to the scroll story, not the menu.
+    if (window.scrollY > 12) return;
 
     // Don't trigger if user is selecting text
     const selection = window.getSelection();
@@ -123,7 +200,7 @@ export default function Home() {
       target?.closest(".menu-toggle") ||
       target?.closest(".overlay-menu") ||
       target?.closest(".global-back-btn") ||
-      target?.closest(".home-strip")
+      target?.closest(".home-peek")
     ) {
       return;
     }
@@ -155,110 +232,98 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="reveal-root" onClick={handlePageClick}>
-      <Topbar
-        variant="home"
-        isOpen={isMenuOpen}
-        onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
-      />
-
+    <div className="reveal-root home-page" onClick={handlePageClick}>
       <OverlayMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-      <section className="home-hero">
-        <img
-          className="home-hero__poster"
-          src="/assets/home-poster.jpg"
-          alt="A figure walks across a marble floor toward the large red Captionz gateway, set beneath a bright, cloud-filled sky."
+      <div className="home-veil" ref={veilRef}>
+        <Topbar
+          variant="home"
+          isOpen={isMenuOpen}
+          onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
         />
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/assets/home-poster.jpg"
-          aria-hidden="true"
-          className={isPlaying ? "is-playing" : ""}
-          onPlaying={() => setIsPlaying(true)}
-        >
-          <source src="/assets/home-animation.mp4" type="video/mp4" />
-        </video>
-        <div className="home-hero__scrim" />
 
-        <div className="home-hero__stage">
-          <div className={`hero-statement ${isStatementOpen ? "is-open" : ""}`}>
-            <h1>
-              <button
-                className="step-trigger"
-                type="button"
-                aria-expanded={isStatementOpen}
-                aria-describedby="stepReveal"
-                onFocus={() => setIsStatementOpen(true)}
-                onClick={() => setIsMenuOpen(true)}
-                data-cursor="enter"
-                data-cursor-label="Enter"
-              >
-                Step into the <em>gateway</em> of branding — Captionz
-              </button>
-            </h1>
-            <p className="step-reveal" id="stepReveal">
-              Captionz is a strategic branding and design studio. We take businesses from where they
-              stand today to the identity they're capable of — one deliberate threshold at a time.
-            </p>
+        <section className="home-hero">
+          <img
+            className="home-hero__poster"
+            src="/assets/home-poster.jpg"
+            alt="A figure walks across a marble floor toward the large red Captionz gateway, set beneath a bright, cloud-filled sky."
+          />
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/assets/home-poster.jpg"
+            aria-hidden="true"
+            className={isPlaying ? "is-playing" : ""}
+            onPlaying={() => setIsPlaying(true)}
+          >
+            <source src="/assets/home-animation.mp4" type="video/mp4" />
+          </video>
+          <div className="home-hero__scrim" />
+
+          <div className="home-hero__stage">
+            <div className={`hero-statement ${isStatementOpen ? "is-open" : ""}`}>
+              <h1>
+                <button
+                  className="step-trigger"
+                  type="button"
+                  aria-expanded={isStatementOpen}
+                  aria-describedby="stepReveal"
+                  onFocus={() => setIsStatementOpen(true)}
+                  onClick={() => setIsMenuOpen(true)}
+                  data-cursor="enter"
+                  data-cursor-label="Enter"
+                >
+                  Step into the <em>gateway</em> of branding — Captionz
+                </button>
+              </h1>
+              <p className="step-reveal" id="stepReveal">
+                Captionz is a strategic branding and design studio. We take businesses from where
+                they stand today to the identity they're capable of — one deliberate threshold at a
+                time.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="home-scrollcue" aria-hidden="true">
-          <span>Scroll</span>
-          <i />
-        </div>
-      </section>
+          <Link
+            to="/case-study"
+            className="home-scrollcue"
+            data-cursor="enter"
+            data-cursor-label="Case Studies"
+            aria-label="Skip ahead to Case Studies"
+          >
+            <span>Case Studies</span>
+            <i aria-hidden="true">
+              <b ref={cueFillRef} />
+            </i>
+          </Link>
+        </section>
+      </div>
 
-      <section className="home-strip">
-        <Reveal className="home-strip__head">
-          <p className="eyebrow" style={{ marginBottom: 0 }}>
-            The Gateways
-          </p>
-          <p className="home-strip__note">
-            Everything the studio makes is reached through the same door. Pick where you'd like to
-            step in.
-          </p>
-        </Reveal>
+      {/*
+        The destination, waiting underneath the veil. It is the real case-study
+        index — same component, same data — so once the route changes nothing
+        moves. Inert: it cannot be clicked, focused or read while it is scenery.
+      */}
+      <div className="home-peek" aria-hidden="true" inert>
+        <RevealImmediateContext.Provider value={true}>
+          <ShellLayout activeSection="case-study">
+            <main className="main">
+              <CaseStudyIndex
+                data={preview}
+                view="grid"
+                makeUrl={noUrls}
+                showPagination={false}
+              />
+            </main>
+          </ShellLayout>
+        </RevealImmediateContext.Provider>
+      </div>
 
-        <Reveal className="home-strip__grid" variant="fade">
-          {GATEWAYS.map((item) => (
-            <Link key={item.href} to={item.href} className="home-strip__item">
-              <span className="home-strip__num">{item.num}</span>
-              <span className="home-strip__name">{item.name}</span>
-              <span className="home-strip__label">{item.label}</span>
-              <span className="home-strip__arrow" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M7 17L17 7M17 7H8M17 7V16"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </Link>
-          ))}
-        </Reveal>
-      </section>
-
-      <Footline
-        style={{
-          maxWidth: "var(--max-w)",
-          margin: "0 auto",
-          padding: "22px var(--gutter)",
-        }}
-        links={[
-          { href: "/case-study", label: "Case Study" },
-          { href: "/contact", label: "Contact" },
-        ]}
-      />
+      <div className="home-pull-room" aria-hidden="true" />
     </div>
   );
 }

@@ -768,26 +768,96 @@ body.gate-active {
 }
 
 .menu-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-left: auto;
+  color: var(--charcoal);
+  border: 1px solid rgba(22, 19, 15, 0.24);
+  background: rgba(251, 249, 245, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.35s var(--ease), border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--warm-white);
+}
+
+.menu-toggle:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+.menu-toggle__label {
+  position: relative;
+  display: inline-block;
+  min-width: 3.9em;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: right;
+}
+
+.menu-toggle__label-close {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+}
+
+.menu-toggle.is-open .menu-toggle__label-open {
+  opacity: 0;
+}
+
+.menu-toggle.is-open .menu-toggle__label-close {
+  opacity: 1;
+}
+
+.menu-toggle__bars {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 12px;
-  margin: -12px;
-  margin-left: auto;
-  position: relative;
+  width: 22px;
 }
 
-.menu-toggle span {
+.menu-toggle__bars span {
   display: block;
-  width: 26px;
+  width: 22px;
   height: 2px;
   background: currentColor;
-  transition: transform 0.35s var(--ease-soft), opacity 0.35s var(--ease-soft),
+  transition: transform 0.35s var(--ease-soft), opacity 0.3s var(--ease-soft),
     width 0.35s var(--ease-soft);
 }
 
-.menu-toggle:hover span:nth-child(2) {
-  width: 17px;
+.menu-toggle:hover .menu-toggle__bars span:nth-child(1) {
+  width: 14px;
+}
+
+.menu-toggle:hover .menu-toggle__bars span:nth-child(3) {
+  width: 18px;
+}
+
+.menu-toggle.is-open .menu-toggle__bars span:nth-child(1) {
+  width: 22px;
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle.is-open .menu-toggle__bars span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.is-open .menu-toggle__bars span:nth-child(3) {
+  width: 22px;
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .menu-toggle.is-dark {
@@ -796,23 +866,45 @@ body.gate-active {
 
 .menu-toggle.is-light {
   color: var(--warm-white);
+  border-color: rgba(251, 249, 245, 0.42);
+  background: rgba(22, 19, 15, 0.28);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.35);
 }
 
-.menu-open .menu-toggle span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.menu-open .menu-toggle span:nth-child(2) {
-  opacity: 0;
-  width: 26px;
-}
-
-.menu-open .menu-toggle span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+.menu-toggle.is-light:hover,
+.menu-toggle.is-light:focus-visible {
+  background: var(--red);
+  border-color: var(--red);
+  text-shadow: none;
 }
 
 .menu-open .menu-toggle {
   color: var(--warm-white);
+}
+
+/* Two slow red rings on the landing page only — a nudge, then silence. */
+.menu-toggle.is-attention::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--red);
+  opacity: 0;
+  pointer-events: none;
+  animation: menu-pulse 1.6s var(--ease-soft) 1.6s 2;
+}
+
+@keyframes menu-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  10% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
+  }
 }
 
 /* ---- Mobile nav ---- */

@@ -221,20 +221,30 @@
     grid-template-columns: 1fr;
   }
 
-  .home-hero {
-    height: 88vh;
-  }
-
   .home-hero__stage {
     padding-bottom: 84px;
   }
 
+  /* Compact pill: the reveal must stay discoverable on touch. */
   .home-scrollcue {
-    display: none;
+    right: var(--gutter);
+    bottom: 22px;
+    flex-direction: row;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid rgba(251, 249, 245, 0.34);
+    background: rgba(22, 19, 15, 0.32);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
-  .home-strip__grid {
-    grid-template-columns: 1fr 1fr;
+  .home-scrollcue span {
+    writing-mode: horizontal-tb;
+    font-size: 9.5px;
+  }
+
+  .home-scrollcue i {
+    display: none;
   }
 
   .cs-dossier__head {
@@ -284,10 +294,6 @@
   }
 
   .cs-results {
-    grid-template-columns: 1fr;
-  }
-
-  .home-strip__grid {
     grid-template-columns: 1fr;
   }
 
@@ -346,7 +352,22 @@
     opacity: 1;
   }
 
-  .home-scrollcue i::after {
+  /* The reveal is pure motion: without it the home page is a single screen,
+     and the cue becomes an ordinary link to Case Studies. */
+  .home-peek,
+  .home-pull-room {
     display: none;
+  }
+
+  .home-veil::after {
+    display: none;
+  }
+
+  .home-scrollcue i b {
+    transform: scaleY(1);
+  }
+
+  .menu-toggle.is-attention::after {
+    animation: none;
   }
 }

@@ -62,14 +62,20 @@ export function OverlayMenu({ isOpen, onClose }: OverlayMenuProps) {
     >
       <img className="overlay-menu__gateway" src="/assets/gateway-icon.png" alt="" />
       <button
-        className="menu-toggle overlay-menu__close"
+        className="menu-toggle is-light is-open overlay-menu__close"
         onClick={onClose}
         aria-label="Close menu"
         type="button"
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span className="menu-toggle__label" aria-hidden="true">
+          <span className="menu-toggle__label-open">Menu</span>
+          <span className="menu-toggle__label-close">Close</span>
+        </span>
+        <span className="menu-toggle__bars" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
       <div className="overlay-menu__nav">
         {navItems.map((item, index) => {

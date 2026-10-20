@@ -7,9 +7,11 @@ interface TopbarProps {
 }
 
 export function Topbar({ variant = "default", onToggleMenu, isOpen = false }: TopbarProps) {
+  const isHome = variant === "home";
+
   return (
     <header className="topbar">
-      {variant === "home" ? (
+      {isHome ? (
         <Link to="/" className="home-logo-block" aria-label="Captionz home" data-no-gate>
           <span className="home-word">
             C<img src="/assets/gateway-icon.png" alt="" />
@@ -24,16 +26,26 @@ export function Topbar({ variant = "default", onToggleMenu, isOpen = false }: To
       )}
 
       <button
-        className={`menu-toggle ${variant === "home" ? "is-light" : "is-dark"}`}
+        className={`menu-toggle ${isHome ? "is-light is-attention" : "is-dark"} ${
+          isOpen ? "is-open" : ""
+        }`}
         onClick={onToggleMenu}
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        data-cursor="open"
+        data-cursor-label={isOpen ? "Close" : "Menu"}
         type="button"
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span className="menu-toggle__label" aria-hidden="true">
+          <span className="menu-toggle__label-open">Menu</span>
+          <span className="menu-toggle__label-close">Close</span>
+        </span>
+        <span className="menu-toggle__bars" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
     </header>
   );
