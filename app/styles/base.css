@@ -1676,11 +1676,16 @@ body.menu-open {
   gap: 10px;
   min-width: min(340px, 100%);
   border-bottom: 1px solid var(--line-strong);
-  transition: border-color 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 
 .studio-search-bar:focus-within {
   border-color: var(--red);
+}
+
+/* The bar's underline carries the focus state; no second focus box. */
+.studio-search-input:focus-visible {
+  outline: none;
 }
 
 .studio-search-input {
@@ -1692,6 +1697,22 @@ body.menu-open {
   border-radius: 0;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* Works keeps the search compact and clear of the category tabs. */
+.works-main .studio-search-bar {
+  width: 100%;
+  max-width: 440px;
+  border-bottom-color: var(--line);
+}
+
+.works-main .studio-search-bar:focus-within {
+  border-bottom-color: var(--red);
+  box-shadow: 0 1px 0 var(--red);
+}
+
+.works-main .filters {
+  margin-top: var(--s3);
 }
 
 .studio-search-input::placeholder {

@@ -163,7 +163,7 @@ export default function Works({ loaderData }: Route.ComponentProps) {
 
   return (
     <ShellLayout activeSection="works">
-      <main className="main">
+      <main className="main works-main">
         <div className="content-head reveal" style={{ maxWidth: "none", paddingBottom: "10px" }}>
           <p className="eyebrow">Works That Worked</p>
           <h1 className="h-hero">
