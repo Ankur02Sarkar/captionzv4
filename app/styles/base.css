@@ -216,9 +216,10 @@ select {
   margin: -17px 0 0 -17px;
   border: 1.4px solid rgba(251, 249, 245, 0.92);
   border-radius: 50%;
-  mix-blend-mode: difference;
+  box-shadow: 0 0 0 1px rgba(22, 19, 15, 0.6);
   transition: width 0.32s var(--ease), height 0.32s var(--ease), margin 0.32s var(--ease),
-    background 0.32s var(--ease), border-color 0.32s var(--ease), opacity 0.2s linear;
+    background 0.32s var(--ease), border-color 0.32s var(--ease), box-shadow 0.32s var(--ease),
+    opacity 0.2s linear;
 }
 
 .cursor-ring[data-state="link"] {
@@ -234,7 +235,7 @@ select {
   margin: -40px 0 0 -40px;
   background: var(--red);
   border-color: var(--red);
-  mix-blend-mode: normal;
+  box-shadow: none;
 }
 
 .cursor-ring[data-state="text"] {
@@ -244,6 +245,7 @@ select {
   border-radius: 2px;
   background: rgba(251, 249, 245, 0.9);
   border-color: transparent;
+  box-shadow: none;
 }
 
 .cursor-ring[data-pressed] {
@@ -756,7 +758,7 @@ body.gate-active {
 }
 
 .topbar__mark {
-  display: block;
+  display: none;
   width: 32px;
 }
 
