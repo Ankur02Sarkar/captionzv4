@@ -18,9 +18,6 @@ export interface CaseStudyIndexItem {
   year: number;
   tagline: string;
   heroImage: string;
-  clientLogo: string | null;
-  /** First outcome only — the index shows a single metric per card. */
-  topResult: { label: string; value: string } | null;
 }
 
 export interface CaseStudyIndexData {
@@ -51,16 +48,6 @@ export const FALLBACK_CATEGORIES = [
   "Environmental",
   "Institutional",
 ];
-
-function safeParseJson<T>(raw: unknown, fallback: T): T {
-  if (!raw) return fallback;
-  if (typeof raw === "object") return raw as T;
-  try {
-    return JSON.parse(String(raw)) as T;
-  } catch {
-    return fallback;
-  }
-}
 
 type Database = NonNullable<ReturnType<typeof getDatabase>>;
 
@@ -146,8 +133,6 @@ export async function getCaseStudyIndex(
         year: caseStudies.year,
         tagline: caseStudies.tagline,
         heroImage: caseStudies.heroImage,
-        clientLogo: caseStudies.clientLogo,
-        results: caseStudies.results,
       })
       .from(caseStudies)
       .where(whereClause)
@@ -155,26 +140,17 @@ export async function getCaseStudyIndex(
       .limit(limit)
       .offset(offset);
 
-    const items: CaseStudyIndexItem[] = rows.map((row) => {
-      const results = safeParseJson<Array<{ label: string; value: string }>>(
-        row.results,
-        []
-      );
-
-      return {
-        id: row.id,
-        slug: row.slug,
-        client: row.client,
-        title: row.title,
-        industry: row.industry,
-        category: row.category,
-        year: row.year,
-        tagline: row.tagline,
-        heroImage: row.heroImage,
-        clientLogo: row.clientLogo ?? null,
-        topResult: results[0] ?? null,
-      };
-    });
+    const items: CaseStudyIndexItem[] = rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      client: row.client,
+      title: row.title,
+      industry: row.industry,
+      category: row.category,
+      year: row.year,
+      tagline: row.tagline,
+      heroImage: row.heroImage,
+    }));
 
     return {
       items,

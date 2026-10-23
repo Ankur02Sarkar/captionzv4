@@ -569,7 +569,7 @@ body.gate-active {
 
 .room {
   position: relative;
-  background: linear-gradient(180deg, var(--ivory) 0%, #f1ede5 100%);
+  background: linear-gradient(180deg, #f3ede4 0%, #eee6da 100%);
 }
 
 /* Architectural light: two raking sun bands and a soft arch on the right. */
@@ -620,7 +620,7 @@ body.gate-active {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(251, 249, 245, 0.5), rgba(244, 241, 234, 0));
+  background: linear-gradient(180deg, #f7f0e9 0%, #f0e7dd 100%);
   z-index: 20;
 }
 
@@ -1260,6 +1260,81 @@ body.menu-open {
   padding-top: var(--head-pad);
   padding-bottom: var(--s5);
   max-width: 800px;
+}
+
+/* Case-study index: compact masthead, search/filters parked alongside it. */
+.case-index-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 26vw, 360px);
+  column-gap: clamp(32px, 4.5vw, 80px);
+  align-items: end;
+}
+
+.content-head--index {
+  padding-top: clamp(92px, 8.3vw, 124px);
+  padding-bottom: 34px;
+  max-width: 660px;
+}
+
+.content-head--index .eyebrow {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  gap: 0;
+  margin-bottom: 26px;
+}
+
+.content-head--index .eyebrow::before {
+  display: none;
+}
+
+.content-head--index .h-hero {
+  font-size: clamp(46px, 5.6vw, 86px);
+  line-height: 0.95;
+}
+
+.content-head--index .h-hero .rule {
+  width: 34px;
+  height: 2px;
+  margin: 26px 0 24px;
+}
+
+.content-head--index .lede {
+  margin-top: 0;
+  max-width: 360px;
+  font-size: 17px;
+  line-height: 1.62;
+}
+
+.case-index-head .index-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  margin: 0;
+  padding: 0 0 40px;
+  border-bottom: 0;
+}
+
+.case-index-head .index-bar .studio-search-bar {
+  grid-column: auto;
+  grid-row: auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.case-index-head .index-bar .filters {
+  grid-column: auto;
+  grid-row: auto;
+  gap: 12px 16px;
+}
+
+.case-index-head .index-bar .case-view-switch {
+  grid-column: auto;
+  grid-row: auto;
+  justify-self: auto;
+  align-self: flex-end;
 }
 
 .eyebrow {

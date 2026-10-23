@@ -15,6 +15,18 @@ const ARROW = (
   </svg>
 );
 
+const CARD_ARROW = (
+  <svg width="30" height="16" viewBox="0 0 30 16" fill="none" aria-hidden="true">
+    <path
+      d="M1 8h27M21.5 1.5 28 8l-6.5 6.5"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export type UrlOverrides = {
   q?: string;
   category?: string;
@@ -47,120 +59,120 @@ export function CaseStudyIndex({
 
   return (
     <>
-      <div className="content-head">
-        <Reveal as="p" className="eyebrow" variant="fade">
-          Strategy. Identity. Architecture.
-        </Reveal>
-        <Reveal variant="mask">
-          <h1 className="h-hero">
-            Case
-            <br />
-            Studies
-            <span className="rule" aria-hidden="true" />
-          </h1>
-        </Reveal>
-        <Reveal as="p" className="lede" variant="up" delay={0.08}>
-          Real brands. Real friction. The architectural systems and campaigns that moved them from
-          commodity to high-tension industry leaders.
-        </Reveal>
-      </div>
-
-      <div className="index-bar">
-        <Form method="get" className="studio-search-bar" role="search">
-          {currentCategory !== "all" && (
-            <input type="hidden" name="category" value={currentCategory} />
-          )}
-          {view === "list" && <input type="hidden" name="view" value="list" />}
-          <svg
-            className="studio-search-icon"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="search"
-            name="q"
-            defaultValue={currentQuery}
-            placeholder="Search by client, industry, keyword…"
-            className="studio-search-input"
-            aria-label="Search case studies"
-          />
-          {currentQuery && (
-            <Link
-              to={makeUrl({ q: "", page: 1 })}
-              className="studio-search-clear"
-              title="Clear search"
-              aria-label="Clear search"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
-                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </Link>
-          )}
-        </Form>
-
-        <div className="filters" role="tablist" aria-label="Filter case studies by category">
-          {categories.map((cat) => {
-            const isActive =
-              (cat === "all" && currentCategory === "all") ||
-              currentCategory.toLowerCase() === cat.toLowerCase();
-            return (
-              <Link
-                key={cat}
-                to={makeUrl({ category: cat, page: 1 })}
-                className={isActive ? "is-active" : ""}
-                role="tab"
-                aria-selected={isActive}
-              >
-                {cat === "all" ? "All Disciplines" : cat}
-              </Link>
-            );
-          })}
+      <div className="case-index-head">
+        <div className="content-head content-head--index">
+          <Reveal as="p" className="eyebrow" variant="fade">
+            Strategy. Identity. Architecture.
+          </Reveal>
+          <Reveal variant="mask">
+            <h1 className="h-hero">
+              Case Studies
+              <span className="rule" aria-hidden="true" />
+            </h1>
+          </Reveal>
+          <Reveal as="p" className="lede" variant="up" delay={0.08}>
+            Real brands. Real friction. The architectural systems and campaigns that moved them from
+            commodity to high-tension industry leaders.
+          </Reveal>
         </div>
 
-        <div className="case-view-switch" role="group" aria-label="View layout switch">
-          <Link
-            to={makeUrl({ view: "grid" })}
-            className={`case-view-btn ${view === "grid" ? "is-active" : ""}`}
-            aria-label="Grid view"
-            title="Grid view"
-            preventScrollReset
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
+        <div className="index-bar">
+          <Form method="get" className="studio-search-bar" role="search">
+            {currentCategory !== "all" && (
+              <input type="hidden" name="category" value={currentCategory} />
+            )}
+            {view === "list" && <input type="hidden" name="view" value="list" />}
+            <svg
+              className="studio-search-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <span>Grid</span>
-          </Link>
-          <Link
-            to={makeUrl({ view: "list" })}
-            className={`case-view-btn ${view === "list" ? "is-active" : ""}`}
-            aria-label="List view"
-            title="List view"
-            preventScrollReset
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <line x1="8" y1="6" x2="21" y2="6" />
-              <line x1="8" y1="12" x2="21" y2="12" />
-              <line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" />
-              <line x1="3" y1="12" x2="3.01" y2="12" />
-              <line x1="3" y1="18" x2="3.01" y2="18" />
-            </svg>
-            <span>List</span>
-          </Link>
+            <input
+              type="search"
+              name="q"
+              defaultValue={currentQuery}
+              placeholder="Search by client, industry, keyword…"
+              className="studio-search-input"
+              aria-label="Search case studies"
+            />
+            {currentQuery && (
+              <Link
+                to={makeUrl({ q: "", page: 1 })}
+                className="studio-search-clear"
+                title="Clear search"
+                aria-label="Clear search"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
+                  <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
+                </svg>
+              </Link>
+            )}
+          </Form>
+
+          <div className="filters" role="tablist" aria-label="Filter case studies by category">
+            {categories.map((cat) => {
+              const isActive =
+                (cat === "all" && currentCategory === "all") ||
+                currentCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <Link
+                  key={cat}
+                  to={makeUrl({ category: cat, page: 1 })}
+                  className={isActive ? "is-active" : ""}
+                  role="tab"
+                  aria-selected={isActive}
+                >
+                  {cat === "all" ? "All Disciplines" : cat}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="case-view-switch" role="group" aria-label="View layout switch">
+            <Link
+              to={makeUrl({ view: "grid" })}
+              className={`case-view-btn ${view === "grid" ? "is-active" : ""}`}
+              aria-label="Grid view"
+              title="Grid view"
+              preventScrollReset
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span>Grid</span>
+            </Link>
+            <Link
+              to={makeUrl({ view: "list" })}
+              className={`case-view-btn ${view === "list" ? "is-active" : ""}`}
+              aria-label="List view"
+              title="List view"
+              preventScrollReset
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              <span>List</span>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -216,7 +228,6 @@ export function CaseStudyIndex({
       ) : (
         <div className="cs-index">
           {items.map((item, index) => {
-            const topResult = item.topResult;
             const number = String(pageOffset + index + 1).padStart(2, "0");
 
             return (
@@ -244,31 +255,15 @@ export function CaseStudyIndex({
                         index={pageOffset + index + 1}
                       />
                     )}
-
-                    {item.clientLogo && (
-                      <span className="cs-card__badge">
-                        <img src={item.clientLogo} alt={`${item.client} logo`} loading="lazy" />
-                      </span>
-                    )}
                   </span>
 
                   <span className="cs-card__body">
-                    <span className="cs-card__num">
-                      {number} · {item.year}
-                    </span>
+                    <span className="cs-card__num">{number}</span>
                     <span className="cs-card__client">{item.client}</span>
                     <span className="cs-card__rule" aria-hidden="true" />
-                    <span className="cs-card__title">{item.title}</span>
                     <span className="cs-card__line">{item.tagline}</span>
-
-                    <span className="cs-card__foot">
-                      <span className="cs-card__meta">
-                        <span>{item.category}</span>
-                        {topResult && <span>{topResult.value}</span>}
-                      </span>
-                      <span className="cs-card__arrow" aria-hidden="true">
-                        {ARROW}
-                      </span>
+                    <span className="cs-card__arrow" aria-hidden="true">
+                      {CARD_ARROW}
                     </span>
                   </span>
                 </Link>

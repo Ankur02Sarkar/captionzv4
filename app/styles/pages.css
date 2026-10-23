@@ -9,159 +9,110 @@
 .cs-index {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(20px, 2.4vw, 34px);
+  column-gap: 24px;
+  row-gap: 30px;
   margin-bottom: var(--s6);
+}
+
+.cs-index > [data-reveal] {
+  display: flex;
 }
 
 .cs-card {
   display: grid;
-  grid-template-columns: 1.06fr 1fr;
-  min-height: 236px;
-  background: var(--warm-white);
-  border: 1px solid var(--line);
+  grid-template-columns: 1.2fr 1fr;
+  width: 100%;
+  min-height: 272px;
+  background: #f6f1eb;
+  border-radius: 12px;
   overflow: hidden;
-  transition: border-color 0.45s var(--ease), transform 0.5s var(--ease),
-    box-shadow 0.5s var(--ease);
+  box-shadow: 0 1px 2px rgba(53, 38, 24, 0.04),
+    0 20px 34px -30px rgba(53, 38, 24, 0.36);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
 }
 
 .cs-card:hover {
-  border-color: rgba(22, 19, 15, 0.4);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(53, 38, 24, 0.05),
+    0 30px 48px -30px rgba(53, 38, 24, 0.46);
 }
 
 .cs-card__media {
   position: relative;
   overflow: hidden;
   background: var(--marble);
-  min-height: 210px;
+  min-height: 200px;
 }
 
 .cs-card__img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   transition: transform 1.1s var(--ease);
 }
 
 .cs-card:hover .cs-card__img {
-  transform: scale(1.045);
-}
-
-.cs-card__badge {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  width: 46px;
-  height: 46px;
-  padding: 5px;
-  background: rgba(251, 249, 245, 0.94);
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.45s var(--ease);
-}
-
-.cs-card__badge img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.cs-card__badge .brand-monogram {
-  font-size: 13px;
-  border: none;
-}
-
-.cs-card:hover .cs-card__badge {
-  transform: translateY(-3px);
+  transform: scale(1.035);
 }
 
 .cs-card__body {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  padding: clamp(18px, 2.1vw, 28px);
+  min-width: 0;
+  padding: clamp(20px, 2vw, 28px);
 }
 
 .cs-card__num {
-  font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.16em;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.04em;
   color: var(--red);
 }
 
 .cs-card__client {
   font-family: var(--font-display);
-  font-size: clamp(19px, 1.7vw, 24px);
-  line-height: 1.04;
+  font-size: clamp(21px, 1.8vw, 27px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.002em;
   text-transform: uppercase;
-  margin-top: 2px;
+  color: #171310;
+  margin-top: 14px;
 }
 
 .cs-card__rule {
-  width: 34px;
+  width: 30px;
   height: 2px;
-  background: var(--line-strong);
-  margin: 4px 0 2px;
-  transform-origin: left center;
-  transition: transform 0.5s var(--ease), background 0.4s var(--ease);
-}
-
-.cs-card:hover .cs-card__rule {
   background: var(--red);
-  transform: scaleX(1.6);
-}
-
-.cs-card__title {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.45;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink);
+  margin: 16px 0 17px;
 }
 
 .cs-card__line {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--stone);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #45413a;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.cs-card__foot {
-  margin-top: auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 12px;
-}
-
-.cs-card__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--stone-light);
-}
-
 .cs-card__arrow {
   display: inline-flex;
+  align-self: flex-end;
+  margin-top: auto;
+  padding-top: 16px;
   color: var(--red);
   transition: transform 0.45s var(--ease);
 }
 
 .cs-card:hover .cs-card__arrow {
-  transform: translate(4px, -4px);
+  transform: translateX(4px);
 }
 
 /* List view */
