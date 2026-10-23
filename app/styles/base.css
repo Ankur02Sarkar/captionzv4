@@ -56,6 +56,10 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Keep the off-canvas gate leaves and the room's architectural arch from
+     widening the layout viewport on iOS/Android. `clip` preserves sticky
+     positioning, unlike `hidden`. */
+  overflow-x: clip;
 }
 
 body {

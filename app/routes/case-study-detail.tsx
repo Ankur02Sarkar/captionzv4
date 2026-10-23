@@ -1,21 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/case-study-detail";
 import { ShellLayout } from "../components/Layout/ShellLayout";
 import { Footline } from "../components/Common/Footline";
 import { BrandPlate, BrandMonogram } from "../components/Common/BrandPlate";
 import { Reveal } from "../components/Motion/Reveal";
-import { CountUp } from "../components/Motion/CountUp";
+import { CaseStudyFlipbook } from "../components/CaseStudy/CaseStudyFlipbook";
 import { getDatabase } from "../db/getDb";
 import { caseStudies } from "../db/schema";
 import { eq, desc, asc } from "drizzle-orm";
 
-interface GalleryImage {
-  src: string;
-  caption?: string;
-}
-
-interface ParsedCaseStudy {
+interface DetailStudy {
   id: string;
   slug: string;
   client: string;
@@ -26,44 +20,8 @@ interface ParsedCaseStudy {
   tagline: string;
   heroImage: string;
   clientLogo?: string | null;
-  galleryImages: GalleryImage[];
   overview: string;
-  challenge: string;
-  strategy: string;
-  results: Array<{ label: string; value: string }>;
-  testimonial: { quote: string; title: string; author: string } | null;
-  deliverables: string[];
   externalUrl?: string | null;
-  published: boolean;
-}
-
-function safeParseJson<T>(raw: any, fallback: T): T {
-  if (!raw) return fallback;
-  if (typeof raw === "object") return raw as T;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-/** Galleries are stored as `{ src, caption }` or bare URL strings. */
-function normaliseGallery(raw: any): GalleryImage[] {
-  const parsed = safeParseJson<unknown>(raw, []);
-  if (!Array.isArray(parsed)) return [];
-
-  return parsed
-    .map((entry): GalleryImage | null => {
-      if (typeof entry === "string") return { src: entry };
-      if (entry && typeof entry === "object") {
-        const record = entry as Record<string, unknown>;
-        const src = (record.src || record.url || record.image) as string | undefined;
-        if (!src) return null;
-        return { src, caption: (record.caption as string) || undefined };
-      }
-      return null;
-    })
-    .filter((entry): entry is GalleryImage => Boolean(entry?.src));
 }
 
 function isPdfUrl(url?: string | null): boolean {
@@ -86,42 +44,35 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 
   const db = getDatabase(context);
 
-  let item: ParsedCaseStudy | null = null;
+  let study: DetailStudy | null = null;
   let nextStudy: { slug: string; client: string; title: string } | null = null;
 
   if (db) {
     try {
-      const rows = await db.select().from(caseStudies).where(eq(caseStudies.slug, slug)).limit(1);
+      const rows = await db
+        .select({
+          id: caseStudies.id,
+          slug: caseStudies.slug,
+          client: caseStudies.client,
+          title: caseStudies.title,
+          industry: caseStudies.industry,
+          category: caseStudies.category,
+          year: caseStudies.year,
+          tagline: caseStudies.tagline,
+          heroImage: caseStudies.heroImage,
+          clientLogo: caseStudies.clientLogo,
+          overview: caseStudies.overview,
+          externalUrl: caseStudies.externalUrl,
+        })
+        .from(caseStudies)
+        .where(eq(caseStudies.slug, slug))
+        .limit(1);
 
       if (rows.length > 0) {
-        const r = rows[0];
-        item = {
-          id: r.id,
-          slug: r.slug,
-          client: r.client,
-          title: r.title,
-          industry: r.industry,
-          category: r.category,
-          year: r.year,
-          tagline: r.tagline,
-          heroImage: r.heroImage,
-          clientLogo: r.clientLogo,
-          galleryImages: normaliseGallery(r.galleryImages),
-          overview: r.overview,
-          challenge: r.challenge,
-          strategy: r.strategy,
-          results: safeParseJson<Array<{ label: string; value: string }>>(r.results, []),
-          testimonial: safeParseJson<{ quote: string; title: string; author: string } | null>(
-            r.testimonial,
-            null
-          ),
-          deliverables: safeParseJson<string[]>(r.deliverables, []),
-          externalUrl: r.externalUrl,
-          published: r.published,
-        };
+        study = rows[0];
 
-        // A deterministic walk through the archive: the same order as the index,
-        // wrapping back to the first study at the end.
+        // A deterministic walk through the archive: the same order as the
+        // index, wrapping back to the first study at the end.
         const ordered = await db
           .select({ slug: caseStudies.slug, client: caseStudies.client, title: caseStudies.title })
           .from(caseStudies)
@@ -133,16 +84,16 @@ export async function loader({ params, context }: Route.LoaderArgs) {
           nextStudy = { slug: next.slug, client: next.client, title: next.title };
         }
       }
-    } catch (err) {
-      console.error("D1 query error in case-study-detail loader:", err);
+    } catch (error) {
+      console.error("D1 query error in case-study-detail loader:", error);
     }
   }
 
-  if (!item) {
+  if (!study) {
     throw new Response("Case Study Not Found", { status: 404 });
   }
 
-  return { study: item, nextStudy };
+  return { study, nextStudy };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -156,118 +107,20 @@ export function meta({ loaderData }: Route.MetaArgs) {
   ];
 }
 
-function Lightbox({
-  images,
-  index,
-  onClose,
-  onStep,
-}: {
-  images: GalleryImage[];
-  index: number;
-  onClose: () => void;
-  onStep: (delta: number) => void;
-}) {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-      if (event.key === "ArrowRight") onStep(1);
-      if (event.key === "ArrowLeft") onStep(-1);
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose, onStep]);
-
-  const current = images[index];
-  if (!current) return null;
-
-  return (
-    <div
-      className="cs-lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label={current.caption || "Project image"}
-      onClick={onClose}
-    >
-      <div className="cs-lightbox__bar" onClick={(event) => event.stopPropagation()}>
-        <span className="cs-lightbox__count">
-          {String(index + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
-        </span>
-        <div className="cs-lightbox__controls">
-          <button
-            type="button"
-            className="cs-lightbox__nav"
-            onClick={() => onStep(-1)}
-            aria-label="Previous image"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="cs-lightbox__nav"
-            onClick={() => onStep(1)}
-            aria-label="Next image"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button type="button" className="cs-lightbox__close" onClick={onClose}>
-            Close
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
-              <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div className="cs-lightbox__stage" onClick={(event) => event.stopPropagation()}>
-        <img className="cs-lightbox__img" src={current.src} alt={current.caption || ""} />
-      </div>
-
-      {current.caption && (
-        <p className="cs-lightbox__caption" onClick={(event) => event.stopPropagation()}>
-          {current.caption}
-        </p>
-      )}
-    </div>
-  );
-}
-
 export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps) {
   const { study, nextStudy } = loaderData;
-  const isPdf = isPdfUrl(study.externalUrl);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [isDeckOpen, setIsDeckOpen] = useState(false);
-
-  const gallery = study.galleryImages;
-  const hasGallery = gallery.length > 0;
-
-  const step = useCallback(
-    (delta: number) => {
-      setLightboxIndex((current) => {
-        if (current === null) return current;
-        return (current + delta + gallery.length) % gallery.length;
-      });
-    },
-    [gallery.length]
-  );
-
-  const chips = useMemo(
-    () => [study.category, study.industry].filter(Boolean),
-    [study.category, study.industry]
-  );
+  const hasDeck = isPdfUrl(study.externalUrl);
+  const deckSrc = hasDeck ? `/case-study/${study.slug}/deck.pdf` : null;
+  const meta = [
+    { label: "Sector", value: study.industry },
+    { label: "Discipline", value: study.category },
+    { label: "Year", value: String(study.year) },
+  ];
 
   return (
     <ShellLayout railMode="work" activeSection="case-study">
-      <main className="main cs-detail">
-        <Link className="cs-back" to="/case-study">
+      <main className="main cs-page">
+        <Link className="cs-page__back" to="/case-study">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M19 12H5M12 19l-7-7 7-7"
@@ -280,327 +133,210 @@ export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps
           All Case Studies
         </Link>
 
-        {/* ---- Hero ---- */}
-        <header className="cs-hero">
-          <div>
-            <div className="cs-hero__id">
-              <span className="cs-hero__badge">
+        <header className="cs-page__hero">
+          <div className="cs-page__copy">
+            <p className="cs-page__eyebrow">
+              <span className="cs-page__eyebrow-line" aria-hidden="true" />
+              Case Study <span aria-hidden="true">/</span> {study.year}
+            </p>
+
+            <div className="cs-page__clientline">
+              <span className="cs-page__badge">
                 {study.clientLogo ? (
                   <img src={study.clientLogo} alt={`${study.client} logo`} />
                 ) : (
                   <BrandMonogram client={study.client} />
                 )}
               </span>
-              <span>
-                <span className="cs-hero__label">
-                  Case Study {String(study.year)}
-                </span>
-                <span className="cs-hero__client">{study.client}</span>
-              </span>
+              <span className="cs-page__client">{study.client}</span>
             </div>
 
             <Reveal variant="mask">
-              <h1 className="cs-hero__title">{study.title}</h1>
+              <h1 className="cs-page__title">{study.title}</h1>
             </Reveal>
 
-            {study.tagline && <p className="cs-hero__tagline">{study.tagline}</p>}
+            {study.tagline && <p className="cs-page__tagline">{study.tagline}</p>}
 
-            {chips.length > 0 && (
-              <div className="cs-chip-row">
-                {chips.map((chip) => (
-                  <span key={chip} className="chip">
-                    {chip}
-                  </span>
-                ))}
-              </div>
-            )}
+            <p className="cs-page__description">{study.overview}</p>
 
-            <div className="cs-hero__meta">
-              <span className="cs-meta">
-                <span className="cs-meta__label">Sector</span>
-                <span className="cs-meta__val">{study.industry}</span>
-              </span>
-              <span className="cs-meta">
-                <span className="cs-meta__label">Discipline</span>
-                <span className="cs-meta__val">{study.category}</span>
-              </span>
-              <span className="cs-meta">
-                <span className="cs-meta__label">Year</span>
-                <span className="cs-meta__val">{study.year}</span>
-              </span>
-              {study.deliverables.length > 0 && (
-                <span className="cs-meta">
-                  <span className="cs-meta__label">Workstreams</span>
-                  <span className="cs-meta__val">{study.deliverables.length}</span>
+            <div className="cs-page__meta">
+              {meta.map((item) => (
+                <span className="cs-page__meta-item" key={item.label}>
+                  <span className="cs-page__meta-label">{item.label}</span>
+                  <span className="cs-page__meta-value">{item.value}</span>
                 </span>
+              ))}
+            </div>
+
+            <div className="cs-page__actions">
+              {deckSrc && (
+                <a className="cs-page__action cs-page__action--primary" href="#deck">
+                  Flip the deck
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M12 4v16m0 0 6-6m-6 6-6-6"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              )}
+
+              {study.externalUrl && (
+                <a
+                  className="cs-page__action cs-page__action--quiet"
+                  href={study.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-no-gate
+                >
+                  Open full PDF
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
               )}
             </div>
           </div>
 
-          <Reveal variant="gate" className="cs-hero__visual">
-            {study.heroImage ? (
-              <img src={study.heroImage} alt={`${study.client} — ${study.title}`} />
-            ) : (
-              <BrandPlate
-                client={study.client}
-                category={study.category}
-                industry={study.industry}
-                year={study.year}
-                size="hero"
-              />
-            )}
+          <Reveal variant="gate" className="cs-page__visual">
+            <div className="cs-page__media">
+              {study.heroImage ? (
+                <img src={study.heroImage} alt={`${study.client} — ${study.title}`} />
+              ) : (
+                <BrandPlate
+                  client={study.client}
+                  category={study.category}
+                  industry={study.industry}
+                  year={study.year}
+                  size="hero"
+                />
+              )}
+              <span className="cs-page__visual-label">
+                <span>Selected work</span>
+                <span>{study.category}</span>
+              </span>
+              <span className="cs-page__corner" aria-hidden="true" />
+            </div>
           </Reveal>
         </header>
 
-        {/* ---- The story ---- */}
-        <section className="cs-section">
-          <div className="cs-section__head">
-            <span className="cs-section__label">The Story</span>
-            <span className="cs-section__note">
-              What the brand was up against, and the decision that changed its direction.
-            </span>
-          </div>
-
-          <div className="cs-narrative">
-            <Reveal variant="fade" className="cs-narrative__card">
-              <span className="cs-narrative__eyebrow">The Brief</span>
-              <p className="cs-narrative__body cs-narrative__body--lead">{study.overview}</p>
-            </Reveal>
-            <Reveal variant="fade" delay={0.08} className="cs-narrative__card">
-              <span className="cs-narrative__eyebrow">The Friction</span>
-              <p className="cs-narrative__body">{study.challenge}</p>
-            </Reveal>
-            <Reveal variant="fade" delay={0.16} className="cs-narrative__card">
-              <span className="cs-narrative__eyebrow">The Move</span>
-              <p className="cs-narrative__body">{study.strategy}</p>
-            </Reveal>
-          </div>
-        </section>
-
-        {/* ---- The work ---- */}
-        {hasGallery && (
-          <section className="cs-section">
-            <div className="cs-section__head">
-              <span className="cs-section__label">The Work</span>
-              <span className="cs-section__note">
-                {gallery.length} pieces from the system. Select any frame to open it full size.
-              </span>
-            </div>
-
-            <div className="cs-work__strip">
-              {gallery.map((image, index) => (
-                <Reveal key={image.src} variant="up" delay={Math.min(index, 5) * 0.04}>
-                  <button
-                    type="button"
-                    className="cs-work__item"
-                    onClick={() => setLightboxIndex(index)}
-                    aria-label={`Open image ${index + 1}${image.caption ? `: ${image.caption}` : ""}`}
-                  >
-                    <span className="cs-work__frame">
-                      <img src={image.src} alt={image.caption || ""} loading="lazy" />
-                      <span className="cs-work__zoom" aria-hidden="true">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                          <path
-                            d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    </span>
-                    <span className="cs-work__caption">
-                      <span className="cs-work__num">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="cs-work__text">
-                        {image.caption || `${study.client} — frame ${index + 1}`}
-                      </span>
-                    </span>
-                  </button>
-                </Reveal>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ---- The outcome ---- */}
-        {study.results.length > 0 && (
-          <section className="cs-section">
-            <div className="cs-section__head">
-              <span className="cs-section__label">The Outcome</span>
-              <span className="cs-section__note">What the brand walked away with.</span>
-            </div>
-
-            <div className="cs-results">
-              {study.results.map((result, index) => (
-                <Reveal key={index} variant="fade" delay={index * 0.07} className="cs-result">
-                  <span className="cs-result__val">
-                    <CountUp value={result.value} />
-                  </span>
-                  <span className="cs-result__label">{result.label}</span>
-                </Reveal>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ---- Client voice ---- */}
-        {study.testimonial && (
-          <Reveal variant="fade" className="cs-quote">
-            <span className="cs-quote__mark" aria-hidden="true">
-              “
-            </span>
-            <p className="cs-quote__text">{study.testimonial.quote}</p>
-            <span className="cs-quote__attr">
-              {study.testimonial.author}
-              {study.testimonial.title ? ` — ${study.testimonial.title}` : ""}
-            </span>
-          </Reveal>
-        )}
-
-        {/* ---- What we built ---- */}
-        {study.deliverables.length > 0 && (
-          <section className="cs-section">
-            <div className="cs-section__head">
-              <span className="cs-section__label">What We Built</span>
-            </div>
-            <div className="cs-deliverables">
-              {study.deliverables.map((item, index) => (
-                <span key={item} className="cs-deliverable">
-                  <span className="cs-deliverable__num">{String(index + 1).padStart(2, "0")}</span>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ---- The deck ---- */}
-        {isPdf && (
-          <section className="cs-dossier">
-            <div className="cs-dossier__head">
-              <div className="cs-dossier__info">
-                <span className="cs-dossier__tag">The Full Deck</span>
-                <span className="cs-dossier__name">{study.client} — Case Study</span>
-                <span className="cs-dossier__facts">
-                  Read the unabridged presentation, exactly as it was shared with the client.
-                </span>
+        {deckSrc ? (
+          <section
+            className="cs-page__deck"
+            id="deck"
+            aria-labelledby="case-study-deck-title"
+          >
+            <div className="cs-page__deck-head">
+              <div className="cs-page__deck-intro">
+                <p className="cs-page__kicker">
+                  <span className="cs-page__kicker-dot" aria-hidden="true" />
+                  The Full Deck
+                </p>
+                <h2 id="case-study-deck-title" className="cs-page__deck-title">
+                  Turn the <em>pages.</em>
+                </h2>
+                <p className="cs-page__deck-copy">
+                  The complete case study, one full page at a time. Drag a corner,
+                  swipe, or use the keyboard to move through it.
+                </p>
               </div>
-              <div className="cs-dossier__actions">
-                {!isDeckOpen && (
-                  <button
-                    type="button"
-                    className="cs-dossier__btn cs-dossier__btn--primary"
-                    onClick={() => setIsDeckOpen(true)}
+
+              <div className="cs-page__deck-side">
+                <span className="cs-page__deck-meta">
+                  {study.year} <span aria-hidden="true">/</span> {study.category}
+                </span>
+                {study.externalUrl && (
+                  <a
+                    className="cs-page__pdf-link"
+                    href={study.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-no-gate
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    Open full PDF
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
-                        d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
+                        d="M7 17 17 7M17 7H8M17 7v9"
                         stroke="currentColor"
                         strokeWidth="1.8"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Read the Deck
-                  </button>
+                  </a>
                 )}
-                <a
-                  href={study.externalUrl!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cs-dossier__btn"
-                  data-no-gate
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                    <polyline points="15 3 21 3 21 9" />
-                    <line x1="10" y1="14" x2="21" y2="3" />
-                  </svg>
-                  Open in New Tab
-                </a>
               </div>
             </div>
 
-            <div className="cs-dossier__stage">
-              {isDeckOpen ? (
-                <iframe
-                  src={study.externalUrl!}
-                  title={`${study.client} — ${study.title}`}
-                  className="cs-dossier__frame"
-                />
-              ) : (
-                <div className="cs-dossier__poster">
-                  <span className="cs-dossier__poster-icon" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <span className="cs-dossier__poster-title">
-                    {study.client} — The Complete Presentation
-                  </span>
-                  <p className="cs-dossier__poster-note">
-                    The deck runs to several megabytes. Open it here when you're ready, or take it
-                    with you.
-                  </p>
-                </div>
-              )}
-            </div>
+            <CaseStudyFlipbook
+              src={deckSrc}
+              client={study.client}
+              title={study.title}
+              openHref={study.externalUrl}
+            />
+          </section>
+        ) : (
+          <section className="cs-page__deck cs-page__deck--empty" id="deck">
+            <p className="cs-page__kicker">
+              <span className="cs-page__kicker-dot" aria-hidden="true" />
+              The Full Deck
+            </p>
+            <h2 className="cs-page__deck-title">
+              A deck is <em>being prepared.</em>
+            </h2>
+            <p className="cs-page__deck-copy">
+              The full case study PDF for this project is not attached yet. In the
+              meantime, the work above is the short version.
+            </p>
           </section>
         )}
 
-        {/* ---- Closing ---- */}
-        <section className="cs-outcome">
+        <section className="cs-page__next" aria-label="Continue exploring">
           <div>
-            <p className="cs-outcome__lead">Your Gateway Is Next</p>
-            <p className="cs-outcome__statement">
-              Every brand crosses the same threshold: from what it <em>sells</em> to what it{" "}
-              <em>means</em>.
-            </p>
-          </div>
-
-          <div className="cs-outcome__side">
-            <p className="cs-outcome__body">
-              Tell us where the brand stands today. We'll show you the door it should be walking
-              through.
-            </p>
-            <Link className="btn" to="/contact">
-              Start a Project
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M7 17L17 7M17 7H8M17 7V16"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-
-            {nextStudy && (
-              <Link className="cs-outcome__next" to={`/case-study/${nextStudy.slug}`}>
-                <span>
-                  <span className="cs-outcome__next-label">Next Case Study</span>
-                  <span className="cs-outcome__next-name">{nextStudy.client}</span>
-                </span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <p className="cs-page__next-kicker">The archive continues</p>
+            {nextStudy ? (
+              <Link className="cs-page__next-link" to={`/case-study/${nextStudy.slug}`}>
+                <span className="cs-page__next-client">{nextStudy.client}</span>
+                <span className="cs-page__next-title">{nextStudy.title}</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
-                    d="M7 17L17 7M17 7H8M17 7V16"
+                    d="M7 17 17 7M17 7H8M17 7v9"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
               </Link>
+            ) : (
+              <Link className="cs-page__next-link" to="/case-study">
+                <span className="cs-page__next-client">All Case Studies</span>
+                <span className="cs-page__next-title">Return to the archive</span>
+              </Link>
             )}
           </div>
+
+          <Link className="btn" to="/contact">
+            Start a Project
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M7 17 17 7M17 7H8M17 7v9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
         </section>
 
         <Footline
@@ -611,15 +347,6 @@ export default function CaseStudyDetailPage({ loaderData }: Route.ComponentProps
           ]}
         />
       </main>
-
-      {lightboxIndex !== null && (
-        <Lightbox
-          images={gallery}
-          index={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-          onStep={step}
-        />
-      )}
     </ShellLayout>
   );
 }
